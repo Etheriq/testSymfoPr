@@ -62,10 +62,6 @@ class CtoClient implements \JsonSerializable
      */
     protected $slug;
 
-    /**
-     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\ClientCar", mappedBy="ctoClient", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $cars;
 
     /**
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\City", inversedBy="ctoClients")
@@ -104,7 +100,6 @@ class CtoClient implements \JsonSerializable
 
     public function __construct()
     {
-        $this->cars = new ArrayCollection();
         $this->notifications = new ArrayCollection();
         $this->carJobs = new ArrayCollection();
     }
@@ -242,34 +237,6 @@ class CtoClient implements \JsonSerializable
     public function setSlug($slug)
     {
         $this->slug = $slug;
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getCars()
-    {
-        return $this->cars;
-    }
-
-    /**
-     * @param ClientCar $car
-     * @return CtoClient
-     */
-    public function addCar(ClientCar $car)
-    {
-        $car->setCtoClient($this);
-        $this->cars->add($car);
-
-        return $this;
-    }
-
-    /**
-     * @param ClientCar $car
-     */
-    public function removeCar(ClientCar $car)
-    {
-        $this->cars->removeElement($car);
     }
 
     /**

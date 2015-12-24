@@ -48,11 +48,6 @@ class CarJob implements \JsonSerializable
     protected $client;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\ClientCar", inversedBy="carJobs")
-     */
-    protected $car;
-
-    /**
      * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\CarCategory", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $carCategories;
@@ -61,16 +56,6 @@ class CarJob implements \JsonSerializable
      * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Notification", mappedBy="carJob")
      */
     protected $notifications;
-
-    /**
-     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\SpendingJob", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $spendingJob;
-
-    /**
-     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\UsedMaterialsJob", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $usedMaterialsJob;
 
     /**
      * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\PaidSalaryJob", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
@@ -95,10 +80,7 @@ class CarJob implements \JsonSerializable
             "car_job" => [
                 "jobDate" => $this->getJobDate()->format("d.m.Y"),
                 "client" => (string) $this->getClient()->getId(),
-                "car" => $this->getCar() ? (string) $this->getCar()->getId() : '',
                 "carCategories" => $this->getCarCategories()->getValues(),
-                "spendingJob" => $this->getSpendingJob()->getValues(),
-                "usedMaterialsJob" => $this->getUsedMaterialsJob()->getValues(),
                 "paidSalaryJob" => $this->getPaidSalaryJob()->getValues()
             ]
         ];
@@ -108,8 +90,6 @@ class CarJob implements \JsonSerializable
     {
         $this->notifications = new ArrayCollection();
         $this->carCategories = new ArrayCollection();
-        $this->spendingJob = new ArrayCollection();
-        $this->usedMaterialsJob = new ArrayCollection();
         $this->paidSalaryJob = new ArrayCollection();
         $this->recommendations = new ArrayCollection();
         $this->totalCost = 0;
@@ -195,62 +175,6 @@ class CarJob implements \JsonSerializable
     /**
      * @return Collection
      */
-    public function getSpendingJob()
-    {
-        return $this->spendingJob;
-    }
-
-    /**
-     * @param SpendingJob $spendingJob
-     * @return CarJob
-     */
-    public function addSpendingJob(SpendingJob $spendingJob)
-    {
-        $spendingJob->setCarJob($this);
-        $this->spendingJob->add($spendingJob);
-
-        return $this;
-    }
-
-    /**
-     * @param SpendingJob $spendingJob
-     */
-    public function removeSpendingJob(SpendingJob $spendingJob)
-    {
-        $this->spendingJob->removeElement($spendingJob);
-    }
-
-    /**
-     * @return Collection
-     */
-    public function getUsedMaterialsJob()
-    {
-        return $this->usedMaterialsJob;
-    }
-
-    /**
-     * @param UsedMaterialsJob $usedMaterialsJob
-     * @return CarJob
-     */
-    public function addUsedMaterialsJob(UsedMaterialsJob $usedMaterialsJob)
-    {
-        $usedMaterialsJob->setCarJob($this);
-        $this->usedMaterialsJob->add($usedMaterialsJob);
-
-        return $this;
-    }
-
-    /**
-     * @param UsedMaterialsJob $usedMaterialsJob
-     */
-    public function removeUsedMaterialsJob(UsedMaterialsJob $usedMaterialsJob)
-    {
-        $this->usedMaterialsJob->removeElement($usedMaterialsJob);
-    }
-
-    /**
-     * @return Collection
-     */
     public function getPaidSalaryJob()
     {
         return $this->paidSalaryJob;
@@ -274,25 +198,6 @@ class CarJob implements \JsonSerializable
     public function removePaidSalaryJob(PaidSalaryJob $paidSalaryJob)
     {
         $this->paidSalaryJob->removeElement($paidSalaryJob);
-    }
-
-    /**
-     * @return ClientCar
-     */
-    public function getCar()
-    {
-        return $this->car;
-    }
-
-    /**
-     * @param ClientCar $car
-     * @return CarJob
-     */
-    public function setCar(ClientCar $car)
-    {
-        $this->car = $car;
-
-        return $this;
     }
 
     /**

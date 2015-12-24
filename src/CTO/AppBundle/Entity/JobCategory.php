@@ -91,7 +91,6 @@ class JobCategory implements \JsonSerializable
      */
     public function addCarJob(CarJob $carJob)
     {
-        $carJob->setJobCategory($this);
         $this->carJobs->add($carJob);
 
         return $this;
