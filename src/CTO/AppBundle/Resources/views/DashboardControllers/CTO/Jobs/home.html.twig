@@ -21,7 +21,9 @@
                 <p><span class="font-bolder">Обслужено клієнтів: </span>{{ clients }}</p>
                 <p><span class="font-bolder">Зароблено:</span> {{ money | number_format(2, '.', ',') }} грн.</p>
             </div>
-            <a href="{{ path('cto_finance_archive', {'year': 'now' | date('Y') }) }}">Фінансовий архів.</a>
+            {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                <a href="{{ path('cto_finance_archive', {'year': 'now' | date('Y') }) }}">Фінансовий архів.</a>
+            {% endif %}
 
         </div>
         <div class="col-md-8 col-lg-8 col-sm-12 col-xs-12">

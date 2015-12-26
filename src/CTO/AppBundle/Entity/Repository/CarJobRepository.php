@@ -2,6 +2,7 @@
 
 namespace CTO\AppBundle\Entity\Repository;
 
+use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
@@ -14,6 +15,11 @@ class CarJobRepository extends EntityRepository
             ->createQuery('SELECT j From CTOAppBundle:CarJob j left JOIN j.client cc WHERE cc.cto = :ctoUser ORDER by j.jobDate DESC ')->setParameter('ctoUser', $user);
     }
 
+    /**
+     * @param $filterData
+     * @param CtoUser $user
+     * @return array
+     */
     public function jobsFilter($filterData, CtoUser $user)
     {
         $qb = $this->createQueryBuilder('j')
@@ -37,6 +43,14 @@ class CarJobRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * @param $start
+     * @param $end
+     * @param CtoUser $user
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function countForMonth($start, $end, CtoUser $user)
     {
         return $this->createQueryBuilder('j')
@@ -52,6 +66,32 @@ class CarJobRepository extends EntityRepository
             ->getSingleResult();
     }
 
+    /**
+     * @param CtoUser $user
+     * @param CtoClient $client
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countForMonthByClient(CtoUser $user, CtoClient $client)
+    {
+        return $this->createQueryBuilder('j')
+            ->select('count(j) as jobs')
+            ->join('j.client', 'cl')
+            ->andWhere('j.client = :ctoClient')->setParameter('ctoClient', $client)
+            ->andWhere('cl.cto = :ctoUser')->setParameter('ctoUser', $user)
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    /**
+     * @param $start
+     * @param $end
+     * @param CtoUser $user
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function countDistinctClientCarsForMonth($start, $end, CtoUser $user)
     {
         return $this->createQueryBuilder('j')

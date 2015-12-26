@@ -131,7 +131,7 @@ class ClientsController extends Controller
      */
     public function filterAction(Request $request)
     {
-        /** @var Array $filterFormData */
+        /** @var array $filterFormData */
         $filterFormData = $request->get('cto_client_filter', null);
         if ($filterFormData) {
             $filterFormData = array_filter($filterFormData);

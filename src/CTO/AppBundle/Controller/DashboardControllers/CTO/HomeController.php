@@ -9,6 +9,7 @@ use CTO\AppBundle\Form\CtoUserType;
 use CTO\AppBundle\Form\DTO\FinancialArchiveYearType;
 use DateTime;
 use Doctrine\ORM\EntityManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -77,6 +78,7 @@ class HomeController extends Controller
      *
      * @Route("/finance/{year}", name="cto_finance_archive")
      * @Method({"GET", "POST"})
+     * @Security("has_role('ROLE_PREVIOUS_ADMIN')")
      * @Template()
      */
     public function financialReportByYearAction($year, Request $request)

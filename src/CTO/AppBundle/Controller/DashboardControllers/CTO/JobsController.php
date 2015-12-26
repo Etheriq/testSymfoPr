@@ -231,6 +231,9 @@ class JobsController extends JsonController
     public function showAction(CarJob $carJob, Request $request)
     {
         $form = $this->createForm(new JobsRecommendationsType(), $carJob);
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $visitsCount = $em->getRepository("CTOAppBundle:CarJob")->countForMonthByClient($this->getUser(), $carJob->getClient());
 
         if ($request->getMethod() == Request::METHOD_POST) {
             $form->handleRequest($request);
@@ -242,6 +245,7 @@ class JobsController extends JsonController
 
                 return [
                     'form' => $form->createView(),
+                    'visits' => $visitsCount['jobs'],
                     'job' => $carJob
                 ];
             }
@@ -249,6 +253,7 @@ class JobsController extends JsonController
 
         return [
             'form' => $form->createView(),
+            'visits' => $visitsCount['jobs'],
             'job' => $carJob
         ];
     }
