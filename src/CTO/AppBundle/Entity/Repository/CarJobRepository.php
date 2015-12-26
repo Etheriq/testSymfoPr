@@ -11,7 +11,7 @@ class CarJobRepository extends EntityRepository
     public function listJobsWithSortings(CtoUser $user)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT j From CTOAppBundle:CarJob j left JOIN j.client cc left JOIN j.car jcar left JOIN jcar.model m WHERE cc.cto = :ctoUser ORDER by j.jobDate DESC ')->setParameter('ctoUser', $user);
+            ->createQuery('SELECT j From CTOAppBundle:CarJob j left JOIN j.client cc WHERE cc.cto = :ctoUser ORDER by j.jobDate DESC ')->setParameter('ctoUser', $user);
     }
 
     public function jobsFilter($filterData, CtoUser $user)
@@ -86,9 +86,8 @@ class CarJobRepository extends EntityRepository
     public function totalFinancialReportForMonth($start, $end, CtoUser $user)
     {
         return $this->createQueryBuilder('j')
-            ->select('sum(j.totalCost) - sum(j.totalSpend) as money, count(distinct car) as cars, count(j) as jobs')
+            ->select('sum(j.totalCost) - sum(j.totalSpend) as money, count(j) as jobs')
             ->join('j.client', 'cl')
-            ->join('j.car', 'car')
             ->andWhere('cl.cto = :ctoUser')
             ->setParameter('ctoUser', $user)
             ->andWhere('j.jobDate >= :start')

@@ -18,7 +18,7 @@
 
             <div class="well well-lg">
                 <p><span class="font-bolder">Виконано завдань: </span>{{ jobsCount }} </p>
-                <p><span class="font-bolder">Відремонтовано автомобілів: </span>{{ repairCars }}</p>
+                {#<p><span class="font-bolder">Відремонтовано автомобілів: </span>{{ repairCars }}</p>#}
                 <p><span class="font-bolder">Зароблено:</span> {{ money | number_format(2, '.', ',') }} грн.</p>
             </div>
             <a href="{{ path('cto_finance_archive', {'year': 'now' | date('Y') }) }}">Фінансовий архів.</a>

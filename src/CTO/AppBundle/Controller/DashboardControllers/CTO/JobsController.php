@@ -47,7 +47,6 @@ class JobsController extends JsonController
         return [
             'now' => $now,
             'jobsCount' => $finReport['jobs'],
-            'repairCars' => $finReport['cars'],
             'money' => $finReport['money']
         ];
     }
@@ -89,7 +88,7 @@ class JobsController extends JsonController
      */
     public function jobsFilterAction(Request $request)
     {
-        /** @var Array $filterFormData */
+        /** @var array $filterFormData */
         $filterFormData = $request->get('job_filter', null);
         if ($filterFormData) {
             $filterFormData = array_filter($filterFormData);
@@ -136,7 +135,7 @@ class JobsController extends JsonController
     {
 
         return [
-            'title' => 'Нове завдання',
+            'title' => 'Нове замовлення',
             'back' => 'new'
         ];
     }

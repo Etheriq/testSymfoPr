@@ -27,7 +27,7 @@
                     <h3 style="margin-top: 0;">{{ result['date'] | date('F, Y') | monthTranslate }}</h3>
                     <div class="well well-lg">
                         <p><span class="font-bolder">Виконано завдань: </span>{{ result['jobsCount'] }} </p>
-                        <p><span class="font-bolder">Відремонтовано автомобілів: </span>{{ result['repairCars'] }}</p>
+                        {#<p><span class="font-bolder">Відремонтовано автомобілів: </span>{{ result['repairCars'] }}</p>#}
                         <p><span class="font-bolder">Зароблено:</span> {{ result['money'] | number_format(2, '.', ',') }} грн.</p>
                     </div>
                 </div>

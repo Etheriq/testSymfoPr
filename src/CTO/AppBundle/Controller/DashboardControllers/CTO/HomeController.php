@@ -103,7 +103,6 @@ class HomeController extends Controller
             $result[] = [
                 'date' => $month['start'],
                 'jobsCount' => $finReport['jobs'],
-                'repairCars' => $finReport['cars'],
                 'money' => $finReport['money']
             ];
 

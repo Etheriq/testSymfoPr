@@ -8,7 +8,7 @@
                 Завдання:
                 <div class="pull-right">
                     <a href="{{ path('cto_jobs_home') }}" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;Назад</a>
-                    <a href="{{ path('cto_jobs_new') }}" class="btn btn-sm btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;Нове завдання</a>
+                    <a href="{{ path('cto_jobs_new') }}" class="btn btn-sm btn-success"><i class="fa fa-plus"></i>&nbsp;&nbsp;&nbsp;Нове замовлення</a>
                 </div>
             </h3>
             <div class="text-center filter-form">
@@ -39,14 +39,14 @@
                         <th class="text-center">{{ knp_pagination_sortable(jobs, '#', 'j.id') }}</th>
                         <th>{{ knp_pagination_sortable(jobs, "Ім'я", 'cc.firstName') }}</th>
                         <th>{{ knp_pagination_sortable(jobs, 'Прізвище', 'cc.lastName') }}</th>
-                        <th>{{ knp_pagination_sortable(jobs, 'Модель авто', 'm.name') }}</th>
+                        {#<th>{{ knp_pagination_sortable(jobs, 'Модель авто', 'm.name') }}</th>#}
                         <th>{{ knp_pagination_sortable(jobs, 'Дата візиту', 'j.jobDate') }}</th>
                         <th class="text-center">Дії</th>
                     {% else %}
                         <th class="text-center">#</th>
                         <th>Ім'я</th>
                         <th>Прізвище</th>
-                        <th>Модель авто</th>
+                        {#<th>Модель авто</th>#}
                         <th>Дата візиту</th>
                         <th class="text-center">Дії</th>
                     {% endif %}
@@ -58,10 +58,10 @@
                         <td class="text-center">{{ job.id }}</td>
                         <td>{{ job.client.firstName }}</td>
                         <td>{{ job.client.lastName }}</td>
-                        <td>{% if job.car.model is defined %}
-                                {{ job.car.model.name}}
-                            {% endif %}
-                        </td>
+                        {#<td>{% if job.car.model is defined %}#}
+                                {#{{ job.car.model.name}}#}
+                            {#{% endif %}#}
+                        {#</td>#}
                         <td>{{ job.jobDate | date("d.m.Y") }}</td>
                         <td class="text-center">
                             <div class="btn-group">
