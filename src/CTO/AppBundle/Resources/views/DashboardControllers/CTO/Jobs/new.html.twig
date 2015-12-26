@@ -1,9 +1,5 @@
 {% extends '::base.html.twig' %}
-{% block stylesheets %}
-<style>
 
-</style>
-{% endblock %}
 {% block body %}
     <div class="row">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -49,9 +45,6 @@
 {% endblock %}
 
 {% block javascripts %}
-{#<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>#}
-{#<script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>#}
-
 <script>
     jQuery(function ($) {
 
@@ -153,7 +146,7 @@
                 },
                 {
                     "type": "array",
-                    "title": "<h4 class='text-center'>Виконена завдання:</h4>",
+                    "title": "<h4 class='text-center'>Виконане завдання:</h4>",
                     "description": "Блок для Pri4a studio.",
                     "items": {
                         "type": "section",
@@ -255,7 +248,6 @@
                         .error(function(error){
                             console.log(error);
                         });
-//                alert('Values object:\n' + JSON.stringify(values, null, 2));
 //                console.log(values);
                 }
             }
@@ -290,8 +282,6 @@
                     formObj.jsonForm(formSchema);
 
                     clients = $(document.getElementById("jsonform-0-elt-car_job.client"));
-//                    cars = $(document.getElementById("jsonform-0-elt-car_job.car"));
-
                     var getClientsUrl = Routing.generate('ajax_cto_get_clients');
                     $.get(getClientsUrl)
                         .success(function(responseClient){
@@ -300,7 +290,6 @@
                                 $.each(responseClient.clients, function(key, value){
                                     clients.append('<option value="' + value.id + '">' + value.name + '</option>');
                                 });
-                                getClientCars(responseClient.clients[0].id);
                             } else {
                                 clients.append('<option value="" disabled="disabled">Клієнтів не знайдено.</option>');
                             }
@@ -309,11 +298,6 @@
                             console.log(error);
                         })
                     ;
-//                    clients.change(function(){
-//                        var val = $(this).val();
-//                        getClientCars(val);
-//                    });
-
                 } else {
                     // no categories ?
                 }
@@ -322,56 +306,6 @@
                 console.log(error);
             })
         ;
-
-//        function getClientCars(clientId)
-//        {
-//            var carPath = Routing.generate('ajax_cto_cars_from_client', { "id": clientId });
-//            $.get(carPath)
-//                .success(function(response){
-//                    cars.html('');
-//                    if (response.cars.length > 0) {
-//                        $.each(response.cars, function(key, value){
-//                            cars.append('<option value="' + value.id + '">' + value.name + '</option>');
-//                        });
-//                    } else {
-//                        cars.append('<option value="" disabled="disabled">Клієнт не має автомобілів.</option>');
-//                    }
-//                })
-//                .error(function(error){
-//                    console.log(error);
-//                })
-//            ;
-//        }
-
-//        var addCarModalFormSelect = $("#carsForClientInModalForm"),
-//            addCarModalFormCarNumber = $("#client_carNumber"),
-//            addCarModalFormCarColor = $("#client_carColor"),
-//            addCarModalFormCarEngine = $("#client_carEngine"),
-//            addCarModalFormCarVinCode = $("#client_carVinCode"),
-//            addCarModalFormCarYear = $("#client_carYear"),
-//            addCarModalFormSubmitBtn = $("#addCarToClientButtonSubmit");
-//
-//        function getAllCarModels()
-//        {
-//            var url = Routing.generate("cto_models_getAllListForModal");
-//            $.post(url)
-//                .success(function(response){
-//                    addCarModalFormSelect.html('');
-//                    if (response.models.length > 0) {
-//                        $.each(response.models, function(key, value){
-//                            addCarModalFormSelect.append('<option value="' + value.id + '">' + value.name + '</option>');
-//                        });
-//                    } else {
-//                        addCarModalFormSelect.append('<option value="" disabled="disabled">Моделей не знайдено.</option>');
-//                    }
-//                    addCarModalFormSelect.selectpicker('refresh');
-//                })
-//                .error(function(error){
-//                   console.log(error);
-//                })
-//            ;
-//        }
-//        getAllCarModels();
 
     }); // jQuery end
 </script>

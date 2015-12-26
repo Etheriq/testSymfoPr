@@ -40,14 +40,6 @@ class DoctrineCTOClientSubscriber implements EventSubscriber
                 $entity->setTotalCost($totalCost);
 
                 $totalSpend = 0;
-//                /** @var SpendingJob $spendItem */
-//                foreach($entity->getSpendingJob() as $spendItem) {
-//                    $totalSpend += $spendItem->getPrice();
-//                }
-//                /** @var UsedMaterialsJob $usedItem */
-//                foreach($entity->getUsedMaterialsJob() as $usedItem) {
-//                    $totalSpend += $usedItem->getPrice();
-//                }
                 /** @var PaidSalaryJob $paidItem */
                 foreach($entity->getPaidSalaryJob() as $paidItem) {
                     $totalSpend += $paidItem->getPrice();
@@ -75,14 +67,6 @@ class DoctrineCTOClientSubscriber implements EventSubscriber
                 $entity->setTotalCost($totalCost);
 
                 $totalSpend = 0;
-//                /** @var SpendingJob $spendItem */
-//                foreach($entity->getSpendingJob() as $spendItem) {
-//                    $totalSpend += $spendItem->getPrice();
-//                }
-//                /** @var UsedMaterialsJob $usedItem */
-//                foreach($entity->getUsedMaterialsJob() as $usedItem) {
-//                    $totalSpend += $usedItem->getPrice();
-//                }
                 /** @var PaidSalaryJob $paidItem */
                 foreach($entity->getPaidSalaryJob() as $paidItem) {
                     $totalSpend += $paidItem->getPrice();

@@ -99,9 +99,10 @@ class HomeController extends Controller
         while ($startYear <= $endYear) {
             $month = $this->getStartAndFinishMonth($startYear);
             $finReport = $em->getRepository("CTOAppBundle:CarJob")->totalFinancialReportForMonth($month['start'], $month['finish'], $user);
-
+            $uniqClients = $em->getRepository("CTOAppBundle:CtoClient")->getUniqueClients($month['start'], $month['finish'], $user);
             $result[] = [
                 'date' => $month['start'],
+                'client' => $s=$uniqClients['clnts'],
                 'jobsCount' => $finReport['jobs'],
                 'money' => $finReport['money']
             ];

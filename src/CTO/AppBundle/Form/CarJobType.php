@@ -42,20 +42,6 @@ class CarJobType extends AbstractType
                 'by_reference' => false,
                 'cascade_validation' => true
             ])
-//            ->add('spendingJob', 'collection', [
-//                'type' => new SpendingJobType(),
-//                'allow_add' => true,
-//                'allow_delete' => true,
-//                'by_reference' => false,
-//                'cascade_validation' => true
-//            ])
-//            ->add('usedMaterialsJob', 'collection', [
-//                'type' => new UsedMaterialsType(),
-//                'allow_add' => true,
-//                'allow_delete' => true,
-//                'by_reference' => false,
-//                'cascade_validation' => true
-//            ])
             ->add('paidSalaryJob', 'collection', [
                 'type' => new PaidSalaryType(),
                 'allow_add' => true,
@@ -63,38 +49,6 @@ class CarJobType extends AbstractType
                 'by_reference' => false,
                 'cascade_validation' => true
             ])
-
-//            ->add('client', 'entity', [
-//                'class' => 'CTOAppBundle:CtoClient',
-//                'property' => 'fullName',
-//            ])
-//            ->add('car', 'entity', [
-//                'class' => 'CTOAppBundle:ClientCar',
-//                'property' => 'carModel',
-//            ])
-
-//            ->add('description', 'textarea', [
-//                'label' => 'Опис завдання *',
-//                'attr' => [
-//                    'class' => 'form-control',
-//                    'rows' => 6
-//                ],
-//            ])
-//            ->add('price', 'text', [
-//                'label' => 'Ціна (грн.)*',
-//                'attr' => ['class' => 'form-control'],
-//            ])
-//            ->add('jobCategory', 'entity', [
-//                'class' => 'CTOAppBundle:JobCategory',
-//                'property' => "name",
-//                'label' => 'Категорія ремонту *',
-//                'attr'  => [
-//                    'class'         => 'selectpicker',
-//                    'data-width'    => "100%",
-////                    'data-size'     => "15",
-////                    'data-live-search' => true
-//                ],
-//            ])
         ;
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, [$this, 'onPreSetData']);
@@ -117,19 +71,6 @@ class CarJobType extends AbstractType
 //                    'data-live-search' => true
                 ],
                 ])
-//            ->add('car', 'entity', [
-//                'empty_value' => '-- Спочатку виберіть клієнта --',
-//                'label' => 'Автомобілі клієнта',
-//                'attr'  => [
-//                    'class'         => 'selectpicker',
-//                    'data-width'    => "100%",
-////                    'data-size'     => "15",
-////                    'data-live-search' => true
-//                ],
-//                'class' => 'CTOAppBundle:ClientCar',
-//                'property' => 'carModel',
-//                'choices' => $ctoClient ? $ctoClient->getCars() : []
-//            ])
         ;
     }
 

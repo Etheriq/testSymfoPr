@@ -43,9 +43,11 @@ class JobsController extends JsonController
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $finReport = $em->getRepository("CTOAppBundle:CarJob")->totalFinancialReportForMonth($startMonth, $endMonth, $user);
+        $uniqClients = $em->getRepository("CTOAppBundle:CtoClient")->getUniqueClients($startMonth, $endMonth, $user);
 
         return [
             'now' => $now,
+            'clients' => $s=$uniqClients['clnts'],
             'jobsCount' => $finReport['jobs'],
             'money' => $finReport['money']
         ];
@@ -185,7 +187,7 @@ class JobsController extends JsonController
         return [
             'job' => $carJob->jsonSerialize(),
             'jobId' => $carJob->getId(),
-            'title' => 'Редагування завдання',
+            'title' => 'Редагування замовлення',
             'back' => $carJob->getId()
         ];
     }
@@ -211,7 +213,7 @@ class JobsController extends JsonController
 
             $em->flush();
 
-            $this->addFlash('success', "Завдання успішно відредаговано.");
+            $this->addFlash('success', "Замовлення успішно відредаговано.");
 
             return new JsonResponse(["status" => "ok"]);
         }
@@ -315,7 +317,6 @@ class JobsController extends JsonController
 
         return [
             'client' => $carJob->getClient()->getFullName(),
-            'auto' => $carJob->getCar()->getCarModel(),
             'jobId' => $carJob->getId(),
             'type' => 'нагадування',
             'form' => $form->createView()
@@ -389,7 +390,6 @@ class JobsController extends JsonController
 
         return [
             'client' => $carJob->getClient()->getFullName(),
-            'auto' => $carJob->getCar()->getCarModel(),
             'jobId' => $carJob->getId(),
             'type' => 'рекомендацію',
             'form' => $form->createView()

@@ -37,4 +37,17 @@ class CtoClientRepository extends EntityRepository
         return $this->getEntityManager()
             ->createQuery('SELECT u From CTOAppBundle:CtoClient u WHERE u.cto = :ctoUser order by u.lastVisitDate ASC ')->setParameter('ctoUser', $user);
     }
+
+    public function getUniqueClients($start, $end, $user)
+    {
+        return $this->createQueryBuilder('c')
+            ->select('count(distinct c) as clnts')
+            ->leftjoin('c.cto', 'cto')
+            ->leftjoin('c.carJobs', 'cj')
+            ->where('cto = :ctoUser')->setParameter('ctoUser', $user)
+            ->andWhere('cj.jobDate >= :start')->setParameter('start', $start)
+            ->andWhere('cj.jobDate <= :end')->setParameter('end', $end)
+            ->getQuery()
+            ->getSingleResult();
+    }
 }
