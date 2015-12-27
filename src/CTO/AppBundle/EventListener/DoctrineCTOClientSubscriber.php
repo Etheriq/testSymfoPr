@@ -38,6 +38,7 @@ class DoctrineCTOClientSubscriber implements EventSubscriber
                     }
                 }
                 $entity->setTotalCost($totalCost);
+                $entity->getClient()->setTotalCost($entity->getClient()->getTotalCost() + $totalCost);
 
                 $totalSpend = 0;
                 /** @var PaidSalaryJob $paidItem */
@@ -56,6 +57,7 @@ class DoctrineCTOClientSubscriber implements EventSubscriber
 
             /** @var CarJob $entity */
             if ($entity instanceof CarJob) {
+//                $client = $entity->get
                 $totalCost = 0;
                 /** @var CarCategory $category */
                 foreach($entity->getCarCategories() as $category) {
@@ -65,6 +67,7 @@ class DoctrineCTOClientSubscriber implements EventSubscriber
                     }
                 }
                 $entity->setTotalCost($totalCost);
+                $entity->getClient()->setTotalCost($entity->getClient()->getTotalCost() + $totalCost);
 
                 $totalSpend = 0;
                 /** @var PaidSalaryJob $paidItem */

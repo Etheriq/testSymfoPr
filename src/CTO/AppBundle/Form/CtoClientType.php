@@ -26,12 +26,7 @@ class CtoClientType extends AbstractType
                 'attr' => ['class' => 'form-control', 'placeholder' => '(050) 123-45-67'],
                 'required' => false
             ])
-            ->add('cars', 'collection', [
-                'type' => new ClientCarType(),
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false
-            ]);
+        ;
     }
 
     /**

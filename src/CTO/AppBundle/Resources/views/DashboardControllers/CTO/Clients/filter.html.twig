@@ -38,14 +38,22 @@
                         <th>{{ knp_pagination_sortable(clients, 'Ім\'я', 'u.firstName') }}</th>
                         <th>{{ knp_pagination_sortable(clients, 'Прізвище', 'u.lastName') }}</th>
                         <th>{{ knp_pagination_sortable(clients, 'Дата візиту', 'u.lastVisitDate') }}</th>
-                        <th class="text-center">Кількість авто</th>
+                        <th>{{ knp_pagination_sortable(clients, 'Клієнт з', 'u.createdAt') }}</th>
+                        {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                            <th>{{ knp_pagination_sortable(clients, 'Всьго витрачено', 'u.totalCost') }}</th>
+                        {% endif %}
+                        <th class="text-center">Кількість візитів</th>
                         <th class="text-center">Дії</th>
                     {% else %}
                         <th class="text-center">#</th>
                         <th>Ім'я</th>
                         <th>Прізвище</th>
                         <th>Дата візиту</th>
-                        <th class="text-center">Кількість авто</th>
+                        <th>Клієнт з</th>
+                        {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                            <th>Всьго витрачено</th>
+                        {% endif %}
+                        <th class="text-center">Кількість візитів</th>
                         <th class="text-center">Дії</th>
                     {% endif %}
                 </tr>
@@ -57,7 +65,11 @@
                         <td>{{ client.firstName }}</td>
                         <td>{{ client.lastName }}</td>
                         <td>{{ client.lastVisitDate | date("d.m.Y H:i") }}</td>
-                        <td class="text-center">{{ client.cars | length }}</td>
+                        <td>{{ client.createdAt | date("d.m.Y H:i") }}</td>
+                        {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
+                            <td>{{ client.totalCost | number_format(2, '.', ',') }} грн.</td>
+                        {% endif %}
+                        <td class="text-center">{{ client.carJobs | length }}</td>
                         <td class="text-center">
                             <div class="btn-group">
                                 <a class="btn btn-default btn-xs"

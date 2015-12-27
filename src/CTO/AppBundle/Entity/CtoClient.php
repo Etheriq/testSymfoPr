@@ -62,6 +62,10 @@ class CtoClient implements \JsonSerializable
      */
     protected $slug;
 
+    /**
+     * @ORM\Column(name="totalCost", type="float")
+     */
+    protected $totalCost;
 
     /**
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\City", inversedBy="ctoClients")
@@ -100,6 +104,8 @@ class CtoClient implements \JsonSerializable
 
     public function __construct()
     {
+        $this->totalCost = 0;
+
         $this->notifications = new ArrayCollection();
         $this->carJobs = new ArrayCollection();
     }
@@ -157,6 +163,25 @@ class CtoClient implements \JsonSerializable
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalCost()
+    {
+        return $this->totalCost;
+    }
+
+    /**
+     * @param mixed $totalCost
+     * @return CtoClient
+     */
+    public function setTotalCost($totalCost)
+    {
+        $this->totalCost = $totalCost;
 
         return $this;
     }

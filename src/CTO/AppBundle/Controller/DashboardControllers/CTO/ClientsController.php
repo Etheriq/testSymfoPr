@@ -178,8 +178,13 @@ class ClientsController extends Controller
      */
     public function showAction(CtoClient $ctoClient, $tabName)
     {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $visitsCount = $em->getRepository("CTOAppBundle:CarJob")->countForMonthByClient($this->getUser(), $ctoClient);
+
         return [
             "client" => $ctoClient,
+            'visits' => $visitsCount['jobs'],
             "tabName" => $tabName
         ];
     }
