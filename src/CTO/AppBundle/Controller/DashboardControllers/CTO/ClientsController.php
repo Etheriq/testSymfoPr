@@ -2,7 +2,6 @@
 
 namespace CTO\AppBundle\Controller\DashboardControllers\CTO;
 
-use CTO\AppBundle\Entity\ClientCar;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Form\CtoClientFilterType;
@@ -15,7 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -240,46 +238,5 @@ class ClientsController extends Controller
             'form' => $form->createView(),
             'back' => $back
         ];
-    }
-
-    /**
-     * @Route("/addCarTo/{clientId}", name="cto_client_addCarToClient_from_modal", requirements={"clientId"="\d+"}, options={"expose"=true})
-     * @ParamConverter("ctoClient", class="CTOAppBundle:CtoClient", options={"id"="clientId"})
-     * @Method("POST")
-     * @param CtoClient $ctoClient
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function addCarToClientFromModalAction(CtoClient $ctoClient, Request $request)
-    {
-        $modelRequest = $request->get('model', null);
-        if ($modelRequest) {
-
-            /** @var EntityManager $em */
-            $em = $this->getDoctrine()->getManager();
-            $model = $em->getRepository('CTOAppBundle:Model')->find((int)$modelRequest['modelId']);
-            if ($model) {
-                $clientCar = new ClientCar();
-                $clientCar
-                    ->setEngine($modelRequest['carEngine'] ? $modelRequest['carEngine'] : null)
-                    ->setCreateYear($modelRequest['carYear'] ? $modelRequest['carYear'] : null)
-                    ->setVinCode($modelRequest['carVinCode'] ? $modelRequest['carVinCode'] : null)
-                    ->setCarNumber($modelRequest['carNumber'] ? $modelRequest['carNumber'] : null)
-                    ->setCarColor($modelRequest['carColor'] ? $modelRequest['carColor'] : null)
-                    ->setModel($model);
-
-                $em->persist($clientCar);
-                $ctoClient->addCar($clientCar);
-                $em->flush();
-
-                return new JsonResponse([
-                    'status' => 'ok',
-                    'carId' => $clientCar->getId(),
-                    'carName' => $clientCar->getModel()->getName()
-                ]);
-            }
-        }
-
-        return new JsonResponse(['status' => 'fail']);
     }
 }
