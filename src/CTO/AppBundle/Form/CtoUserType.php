@@ -29,28 +29,28 @@ class CtoUserType extends AbstractType
         ];
         $builder
             ->add('firstName', 'text', [
-                'label' => 'Імя відповідальної особи СТО:*',
+                'label' => 'Імя відповідальної особи студії:*',
                 'attr' => ["class" => "form-control"],
                 'required' => false
             ])
             ->add('lastName', 'text', [
-                'label' => 'Прізвище відповідальної особи СТО:',
+                'label' => 'Прізвище відповідальної особи студії:',
                 'attr' => ["class" => "form-control"],
                 'required' => false
             ])
             ->add('email', 'email', [
-                'label' => 'e-mail СТО:*',
+                'label' => 'e-mail студії:*',
                 'attr' => ["class" => "form-control"],
                 'disabled' => $this->type ? false : true,
                 'required' => false
             ])
             ->add('phone', 'text', [
-                'label' => 'Телефон СТО:*',
+                'label' => 'Телефон студії:*',
                 'attr' => ["class" => "form-control", 'placeholder' => '(050) 123-45-67'],
                 'required' => false
             ])
             ->add('ctoName', 'text', [
-                'label' => 'Назва СТО:*',
+                'label' => 'Назва студії:*',
                 'attr' => ["class" => "form-control"],
                 'required' => false
             ])
