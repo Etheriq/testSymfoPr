@@ -3,7 +3,9 @@
 namespace CTO\AppBundle\Controller\DashboardControllers\CTO;
 
 use CTO\AppBundle\Entity\CtoClient;
+use CTO\AppBundle\Entity\CtoClientNotes;
 use CTO\AppBundle\Entity\CtoUser;
+use CTO\AppBundle\Form\ClientCtoNotesType;
 use CTO\AppBundle\Form\CtoClientFilterType;
 use CTO\AppBundle\Form\CtoClientForModalType;
 use CTO\AppBundle\Form\CtoClientType;
@@ -166,7 +168,23 @@ class ClientsController extends Controller
     }
 
     /**
-     * @Route("/show/{slug}/{tabName}", name="cto_client_show", defaults={"tabName" = "info"}, requirements={"tabName" = "info|cars|jobs"})
+     * @Route("/note/rm/{id}", name="cto_client_removeNote", requirements={"id"="\d+"})
+     * @param CtoClientNotes $note
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function removeCtoClientNoteAction(CtoClientNotes $note)
+    {
+        $ctoClient = $note->getClientCto();
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($note);
+        $em->flush();
+
+        return $this->redirectToRoute("cto_client_show", ["slug" => $ctoClient->getSlug()]);
+    }
+
+    /**
+     * @Route("/show/{slug}/{tabName}", name="cto_client_show", defaults={"tabName" = "info"}, requirements={"tabName" = "info|jobs"})
      * @Method({"GET", "POST"})
      * @ParamConverter("ctoClient", class="CTOAppBundle:CtoClient", options={"slug" = "slug"})
      * @Template()
@@ -174,14 +192,38 @@ class ClientsController extends Controller
      * @param $tabName
      * @return array
      */
-    public function showAction(CtoClient $ctoClient, $tabName)
+    public function showAction(CtoClient $ctoClient, $tabName, Request $request)
     {
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $visitsCount = $em->getRepository("CTOAppBundle:CarJob")->countForMonthByClient($this->getUser(), $ctoClient);
+        $notesRes = $em->getRepository("CTOAppBundle:CtoClientNotes")->findBy(["clientCto" => $ctoClient], ["createdAt" => "DESC"]);
+
+        $paginator = $this->get('knp_paginator');
+        $notes = $paginator->paginate(
+            $notesRes,
+            $this->get('request')->query->get('page', 1),   /* page number */
+            5                                               /* limit per page */
+        );
+
+        $note = new CtoClientNotes();
+        $form = $this->createForm(new ClientCtoNotesType(), $note);
+
+        if ($request->getMethod() == Request::METHOD_POST) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $em->persist($note);
+                $ctoClient->addNote($note);
+                $em->flush();
+
+                return $this->redirectToRoute("cto_client_show", ["tabName" => $tabName, "slug" => $ctoClient->getSlug()]);
+            }
+        }
 
         return [
             "client" => $ctoClient,
+            "notes" => $notes,
+            "form" => $form->createView(),
             'visits' => $visitsCount['jobs'],
             "tabName" => $tabName
         ];

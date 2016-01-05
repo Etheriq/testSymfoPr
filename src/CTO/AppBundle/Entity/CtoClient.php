@@ -88,6 +88,11 @@ class CtoClient implements \JsonSerializable
     protected $notifications;
 
     /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\CtoClientNotes", mappedBy="clientCto", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $notes;
+
+    /**
      * (PHP 5 &gt;= 5.4.0)<br/>
      * Specify data which should be serialized to JSON
      * @link http://php.net/manual/en/jsonserializable.jsonserialize.php
@@ -108,6 +113,7 @@ class CtoClient implements \JsonSerializable
 
         $this->notifications = new ArrayCollection();
         $this->carJobs = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
 
     /**
@@ -338,6 +344,34 @@ class CtoClient implements \JsonSerializable
     public function removeCarJob(CarJob $carJob)
     {
         $this->carJobs->removeElement($carJob);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getNotes()
+    {
+        return $this->notes;
+    }
+
+    /**
+     * @param CtoClientNotes $note
+     * @return CtoClient
+     */
+    public function addNote(CtoClientNotes $note)
+    {
+        $note->setClientCto($this);
+        $this->notes->add($note);
+
+        return $this;
+    }
+
+    /**
+     * @param CtoClientNotes $note
+     */
+    public function removeNote(CtoClientNotes $note)
+    {
+        $this->notes->removeElement($note);
     }
 
     public function __toString()
