@@ -8,6 +8,10 @@ class AppKernel extends Kernel
     public function init()
     {
         date_default_timezone_set( 'Europe/Kiev' );
+        ini_set("session.gc_maxlifetime", 24 * 60 * 60);
+        ini_set("session.gc_probability",1);
+        ini_set("session.gc_divisor",1);
+        session_set_cookie_params(24 * 60 * 60);
         parent::init();
     }
 
