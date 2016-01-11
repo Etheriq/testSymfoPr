@@ -133,11 +133,13 @@ class JobsController extends JsonController
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
+        $clientId = $request->get('clientId', -9);
 
         return [
             'title' => 'Нове замовлення',
+            'clientId' => $clientId,
             'back' => 'new'
         ];
     }
@@ -187,6 +189,7 @@ class JobsController extends JsonController
         return [
             'job' => $carJob->jsonSerialize(),
             'jobId' => $carJob->getId(),
+            'jobClientId' => $carJob->getClient()->getId(),
             'title' => 'Редагування замовлення',
             'back' => $carJob->getId()
         ];

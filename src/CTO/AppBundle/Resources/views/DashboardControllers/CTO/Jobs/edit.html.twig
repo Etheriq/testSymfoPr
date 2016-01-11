@@ -47,7 +47,7 @@
 {% block javascripts %}
     <script>
         jQuery(function ($) {
-
+            clientIdz = {{ jobClientId }};
             clientKeys = [];
             clientCarKeys = [];
             clientObj = {};
@@ -314,6 +314,15 @@
                                             console.log(error);
                                         })
                                     ;
+
+                                    setTimeout(function(){
+                                        var options = document.getElementById('jsonform-0-elt-car_job.client').options;
+                                        for (var i = 0; i < options.length; i++) {
+                                            if (options[i].value == clientIdz) {
+                                                options[i].selected = true;
+                                            }
+                                        }
+                                    }, 500);
                                 } else {
                                     clients.append('<option value="" disabled="disabled">Клієнтів не знайдено.</option>');
                                 }

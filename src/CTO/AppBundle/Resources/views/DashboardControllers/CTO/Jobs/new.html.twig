@@ -48,6 +48,7 @@
 <script>
     jQuery(function ($) {
 
+        clientId = {{ clientId }};
         clientKeys = ["1"];
         clientObj = {"1": "Завантаження ... "};
         categoryKeys = [];
@@ -288,7 +289,11 @@
                             clients.html('');
                             if (responseClient.clients.length > 0) {
                                 $.each(responseClient.clients, function(key, value){
-                                    clients.append('<option value="' + value.id + '">' + value.name + '</option>');
+                                    if (clientId == value.id) {
+                                        clients.append('<option value="' + value.id + '" selected>' + value.name + '</option>');
+                                    } else  {
+                                        clients.append('<option value="' + value.id + '">' + value.name + '</option>');
+                                    }
                                 });
                             } else {
                                 clients.append('<option value="" disabled="disabled">Клієнтів не знайдено.</option>');
