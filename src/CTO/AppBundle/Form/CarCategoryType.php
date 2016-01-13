@@ -23,6 +23,14 @@ class CarCategoryType extends AbstractType
 //                    'data-live-search' => true
                 ],
             ])
+            ->add('master', 'entity', [
+                'class' => 'CTO\AppBundle\Entity\Master',
+                'property' => 'fullName',
+                'label' => 'Мастер *',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('jobDescriptions', 'collection', [
                 'type' => new JobDescriptionType(),
                 'allow_add' => true,

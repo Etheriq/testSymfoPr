@@ -16,17 +16,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class AjaxController extends Controller
 {
     /**
-     * @Route("/cto/ajax/carsfromclient/{id}", name="ajax_cto_cars_from_client", options={"expose" = true})
-     * @Method("GET")
-     */
-    public function getCarFromClientAction(CtoClient $ctoClient)
-    {
-        $cars = $ctoClient->getCars()->getValues();
-
-        return new JsonResponse(['cars' => $cars]);
-    }
-
-    /**
      * @Route("/cto/ajax/getctoclients", name="ajax_cto_get_clients", options={"expose" = true})
      * @Method("GET")
      */
@@ -40,6 +29,20 @@ class AjaxController extends Controller
     }
 
     /**
+     * @return JsonResponse
+     * @Route("/cto/ajax/getctomasters", name="ajax_cto_get_masters", options={"expose" = true})
+     * @Method("GET")
+     */
+    public function getAllMastersAction()
+    {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $masters = $em->getRepository("CTOAppBundle:Master")->findBy(['cto' => $this->getUser()]);
+
+        return new JsonResponse(["masters" => $masters]);
+    }
+
+    /**
      * @Route("/cto/ajax/getjobcategories", name="ajax_cto_get_jobCategories", options={"expose" = true})
      * @Method("GET")
      */
@@ -48,11 +51,17 @@ class AjaxController extends Controller
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
         $categories = $em->getRepository("CTOAppBundle:JobCategory")->findAll();
+        $masters = $em->getRepository("CTOAppBundle:Master")->findBy(['cto' => $this->getUser()]);
 
-        return new JsonResponse(["categories" => $categories]);
+        return new JsonResponse([
+            "categories" => $categories,
+            "masters" => $masters
+        ]);
     }
 
     /**
+     * @param CarJob $carJob
+     * @return JsonResponse
      * @Route("/cto/ajax/getJob/{id}", name="ajax_cto_getJobById", options={"expose" = true})
      * @Method("GET")
      */

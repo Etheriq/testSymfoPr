@@ -53,6 +53,8 @@
         clientObj = {"1": "Завантаження ... "};
         categoryKeys = [];
         categoryObj = {};
+        masterKeys = [];
+        masterObj = {};
         var res = $("#res");
 
         var formSchema = {
@@ -82,6 +84,11 @@
                                         "title": "Категорія замовлення",
                                         "enum": categoryKeys
                                     },
+                                    "master": {
+                                        "type": "string",
+                                        "title": "Мастер",
+                                        "enum": masterKeys
+                                    },
                                     "jobDescriptions": {
                                         "type": "array",
                                         "items": {
@@ -108,9 +115,14 @@
                             "items": {
                                 "type": "object",
                                 "properties": {
+                                    "master": {
+                                        "type": "string",
+                                        "title": "Мастер",
+                                        "enum": masterKeys
+                                    },
                                     "description": {
                                         "type": "string",
-                                        "title": "Кому",
+                                        "title": "Нотатки",
                                         "required": true
                                     },
                                     "price": {
@@ -157,6 +169,10 @@
                                 "titleMap": categoryObj
                             },
                             {
+                                "key": "car_job.carCategories[].master",
+                                "titleMap": masterObj
+                            },
+                            {
                                 "type": "array",
                                 "items": [
                                     "car_job.carCategories[].jobDescriptions[]"
@@ -172,6 +188,10 @@
                     "items": {
                         "type": "section",
                         "items": [
+                            {
+                                "key": "car_job.paidSalaryJob[].master",
+                                "titleMap": masterObj
+                            },
                             {
                                 "key": "car_job.paidSalaryJob[].description"
                             },
@@ -278,6 +298,13 @@
                         categoryKeys.push(value.id);
                         categoryObj[value.id] = value.name;
                     });
+
+                    if (response.masters.length > 0) {
+                        $.each(response.masters, function(key, value){
+                            masterKeys.push(value.id);
+                            masterObj[value.id] = value.name;
+                        });
+                    }
 
                     res.html('');
                     formObj.jsonForm(formSchema);

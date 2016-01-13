@@ -11,6 +11,14 @@ class PaidSalaryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $option)
     {
         $builder
+            ->add('master', 'entity', [
+                'class' => 'CTO\AppBundle\Entity\Master',
+                'property' => 'fullName',
+                'label' => 'Мастер *',
+                'attr' => [
+                    'class' => 'form-control'
+                ]
+            ])
             ->add('description', 'textarea', [
                 'label' => 'Опис',
                 'attr' => [
