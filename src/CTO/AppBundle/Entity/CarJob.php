@@ -41,7 +41,10 @@ class CarJob implements \JsonSerializable
      */
     protected $tmpHash;
 
-    protected $files;
+    /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\JobPicture", mappedBy="job", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $pictures;
 
     /**
      * @Assert\NotBlank(message="Обов'язкове поле")
@@ -94,6 +97,7 @@ class CarJob implements \JsonSerializable
         $this->carCategories = new ArrayCollection();
         $this->paidSalaryJob = new ArrayCollection();
         $this->recommendations = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
         $this->totalCost = 0;
         $this->totalSpend = 0;
         $this->tmpHash = uniqid("", true);
@@ -304,21 +308,30 @@ class CarJob implements \JsonSerializable
     }
 
     /**
-     * @return mixed
+     * @return Collection
      */
     public function getFiles()
     {
-        return $this->files;
+        return $this->pictures;
     }
 
     /**
-     * @param mixed $files
+     * @param JobPicture $picture
      * @return CarJob
      */
-    public function setFiles($files)
+    public function addPicture(JobPicture $picture)
     {
-        $this->files = $files;
+        $picture->setJob($this);
+        $this->pictures->add($picture);
 
         return $this;
+    }
+
+    /**
+     * @param JobPicture $picture
+     */
+    public function removePicture(JobPicture $picture)
+    {
+        $this->pictures->removeElement($picture);
     }
 }
