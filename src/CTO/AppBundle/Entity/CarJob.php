@@ -41,6 +41,8 @@ class CarJob implements \JsonSerializable
      */
     protected $tmpHash;
 
+    protected $files;
+
     /**
      * @Assert\NotBlank(message="Обов'язкове поле")
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoClient", inversedBy="carJobs")
@@ -299,5 +301,24 @@ class CarJob implements \JsonSerializable
     public function removeRecommendation(Recommendation $recommendation)
     {
         $this->recommendations->removeElement($recommendation);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param mixed $files
+     * @return CarJob
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
     }
 }

@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class AjaxController extends Controller
 {
@@ -68,6 +69,19 @@ class AjaxController extends Controller
     public function getJob(CarJob $carJob)
     {
         return new JsonResponse(["job" => $carJob]);
+    }
+
+    /**
+     * @return JsonResponse
+     * @Route("/cto/ajax/addedPicturesToJob/{id}", name="ajax_cto_addedPicturesToJob", options={"expose" = true})
+     * @Method("POST")
+     */
+    public function addPicturesToJobAction($id, Request $request)
+    {
+        $q = $request->get('ds', "not sended");
+        $d = 'ds';
+
+        return new JsonResponse(["status" => "ok"], 200);
     }
 
     /**

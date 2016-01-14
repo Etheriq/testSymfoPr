@@ -132,6 +132,8 @@ class JobsController extends JsonController
      * @Route("/new", name="cto_jobs_new")
      * @Method("GET")
      * @Template()
+     * @param Request $request
+     * @return array
      */
     public function newAction(Request $request)
     {
@@ -157,7 +159,7 @@ class JobsController extends JsonController
         $carJob = new CarJob();
         $form = $this->createForm(new CarJobType($em), $carJob);
 
-        if ($request->getMethod() == "POST") {
+        if ($request->getMethod() == Request::METHOD_POST) {
 
             $this->handleJsonForm($form, $request);
 
