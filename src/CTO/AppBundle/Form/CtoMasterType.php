@@ -6,13 +6,19 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class JobCategoryType extends AbstractType
+class CtoMasterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $option)
     {
         $builder
-            ->add('name', 'text', [
-                'label' => 'Назва категорії *',
+            ->add('firstName', 'text', [
+                'label' => 'Ім\'я *',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+            ])
+            ->add('lastName', 'text', [
+                'label' => 'Прізвище',
                 'attr' => [
                     'class' => 'form-control'
                 ],
@@ -26,8 +32,7 @@ class JobCategoryType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'CTO\AppBundle\Entity\JobCategory',
-            'cascade_validation' => true
+            'data_class' => 'CTO\AppBundle\Entity\Master'
         ]);
     }
 
@@ -38,6 +43,7 @@ class JobCategoryType extends AbstractType
      */
     public function getName()
     {
-        return 'job_category';
+        return 'master';
     }
+
 }

@@ -16,6 +16,7 @@ class Master implements \JsonSerializable
     use CreateUpdateTrait;
 
     /**
+     * @Assert\NotBlank(message="Ім'я не повинно бути пустим")
      * @ORM\Column(name="firstName", type="string")
      */
     protected $firstName;

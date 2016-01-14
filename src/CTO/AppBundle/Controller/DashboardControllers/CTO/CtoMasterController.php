@@ -1,9 +1,9 @@
 <?php
 
-namespace CTO\AppBundle\Controller\DashboardControllers\Admin;
+namespace CTO\AppBundle\Controller\DashboardControllers\CTO;
 
-use CTO\AppBundle\Entity\JobCategory;
-use CTO\AppBundle\Form\JobCategoryType;
+use CTO\AppBundle\Entity\Master;
+use CTO\AppBundle\Form\CtoMasterType;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -12,15 +12,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class CategoryController
- * @package CTO\AppBundle\Controller\DashboardControllers\Admin
+ * Class CtoMasterController
+ * @package CTO\AppBundle\Controller\DashboardControllers\CTO
  *
- * @Route("/category")
+ * @Route("/masters")
  */
-class CategoryController extends Controller
+class CtoMasterController extends Controller
 {
     /**
-     * @Route("/list", name="admin_ctoCategory_list")
+     * @Route("/list", name="cto_masters_list")
      * @Method("GET")
      * @Template()
      */
@@ -29,44 +29,44 @@ class CategoryController extends Controller
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
 
-        $categoriesResult = $em->getRepository("CTOAppBundle:JobCategory")->findAll();
+        $mastersResult = $em->getRepository("CTOAppBundle:Master")->findAll();
         $paginator = $this->get('knp_paginator');
-        $categories = $paginator->paginate(
-            $categoriesResult,
+        $masters = $paginator->paginate(
+            $mastersResult,
             $this->get('request')->query->get('page', 1),   /* page number */
             $this->container->getParameter('pagination')    /* limit per page */
         );
 
         return [
-            "categories" => $categories
+            "masters" => $masters
         ];
     }
 
     /**
-     * @Route("/new", name="admin_ctoCategory_create")
-     * @Method({"GET", "POST"})
-     * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/new", name="cto_masters_new")
+     * @Method({"GET", "POST"})
+     * @Template()
      */
     public function newAction(Request $request)
     {
-        $category = new JobCategory();
-        $form = $this->createForm(new JobCategoryType(true), $category);
+        $master = new Master();
+        $form = $this->createForm(CtoMasterType::class, $master);
 
         if ($request->getMethod() == Request::METHOD_POST) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-
                 /** @var EntityManager $em */
                 $em = $this->getDoctrine()->getManager();
-
-                $em->persist($category);
+                $master->setCto($this->getUser());
+                $em->persist($master);
                 $em->flush();
 
-                $this->addFlash('success', "{$category->getName()} успішно створено.");
+                $this->addFlash('success', "Нового майстра успішно створено.");
 
-                return $this->redirectToRoute('admin_ctoCategory_list');
+                return $this->redirectToRoute("cto_masters_list");
             }
         }
 
@@ -77,28 +77,27 @@ class CategoryController extends Controller
     }
 
     /**
-     * @Route("/edit/{id}", name="admin_ctoCategory_edit", requirements={"id" = "\d+"})
-     * @Method({"GET", "POST"})
-     * @Template("@CTOApp/DashboardControllers/Admin/Category/new.html.twig")
-     * @param JobCategory $category
+     * @param Master $master
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/edit/{id}", name="cto_masters_edit", requirements={"id" = "\d+"})
+     * @Template("@CTOApp/DashboardControllers/CTO/CtoMaster/new.html.twig")
      */
-    public function editAction(JobCategory $category, Request $request)
+    public function editAction(Master $master, Request $request)
     {
-        $form = $this->createForm(new JobCategoryType(), $category);
+        $form = $this->createForm(CtoMasterType::class, $master);
 
         if ($request->getMethod() == Request::METHOD_POST) {
             $form->handleRequest($request);
             if ($form->isValid()) {
-
                 /** @var EntityManager $em */
                 $em = $this->getDoctrine()->getManager();
                 $em->flush();
 
-                $this->addFlash('success', "{$category->getName()} успішно відредаговано.");
+                $this->addFlash('success', "Майстра успішно відредаговано.");
 
-                return $this->redirectToRoute('admin_ctoCategory_list');
+                return $this->redirectToRoute("cto_masters_list");
             }
         }
 
@@ -107,5 +106,4 @@ class CategoryController extends Controller
             'title' => 'Редагувати'
         ];
     }
-
 }

@@ -31,6 +31,11 @@
                 <li class="{{ 'cto_client_' in app.request.get('_route') ? 'active' : '' }}">
                     <a href="{{path('cto_client_home')}}"><i class="fa fa-users"></i>&nbsp;Клієнти</a>
                 </li>
+                {% if app.user and is_granted('ROLE_CTO') %}
+                    <li class="{{ 'cto_masters_' in app.request.get('_route') ? 'active' : '' }}">
+                        <a href="{{path('cto_masters_list')}}"><i class="fa fa-female"></i>&nbsp;Майстри</a>
+                    </li>
+                {% endif %}
                 <li class="{{ 'cto_notification_' in app.request.get('_route') ? 'active' : '' }}">
                     <a href="{{path('cto_notification_home')}}" ><i class="fa fa-bell"></i>&nbsp;Сповіщення&nbsp;&nbsp;<span id="badge"></span></a>
                 </li>
