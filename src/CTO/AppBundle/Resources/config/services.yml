@@ -11,6 +11,10 @@ services:
         tags:
             - { name: twig.extension }
 
+    cto.aws.s3:
+        class: CTO\AppBundle\AWS\S3
+        arguments: [%aws_s3_key%, %aws_s3_secret%, %aws_s3_bucket%, %aws_s3_region%, %aws_s3_base_url%]
+
     cto.sms.sender:
         class: CTO\AppBundle\Notification\SMSSender
         arguments:
