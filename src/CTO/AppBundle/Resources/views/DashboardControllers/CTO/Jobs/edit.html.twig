@@ -38,6 +38,18 @@
             </form>
 
             <h4>Превью:</h4>
+            {% if pictures | length > 0 %}
+                <h5 class="text-center">Існуючі:</h5>
+                <div id="old_pictures">
+                    {% for picture in pictures %}
+                        <div style="margin-top: 10px; position: relative;">
+                            <a href="#" data-pictureid="{{ picture.id }}" class="picture-remove-marker remove-technical-class"><i class="fa fa-times"></i></a>
+                            <img src="{{ picture.path | S3Path }}" class="img-responsive" />
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <h5 class="text-center">Нові:</h5>
             <div id="messages"></div>
 
         </div>
@@ -66,6 +78,30 @@
 {% block javascripts %}
     <script>
         jQuery(function ($) {
+
+            var pictureContainer = $("#old_pictures");
+            pictureContainer.on('click', '.remove-technical-class', function(e){
+                e.preventDefault();
+
+                if (!confirm("Ви впевнені що хочете видалити цю картинку?")) {
+
+                    return;
+                }
+                var item = $(this);
+                var removeElement = item.parent();
+                var pictureId = item.data("pictureid");
+                var path = Routing.generate('ajax_cto_removePictureFromJob', {"id": pictureId});
+                $.post(path)
+                    .success(function(response){
+                        if (response.status == "ok") {
+                            removeElement.remove();
+                        }
+                    })
+                    .error(function(error){
+                        console.log(error);
+                    });
+            });
+
             clientIdz = {{ jobClientId }};
             clientKeys = [];
             clientCarKeys = [];
@@ -281,7 +317,7 @@
 
                                         if (uploadedFiles.length > 0) {
 
-                                            var addedPicturesToJobUrl = Routing.generate('ajax_cto_addedPicturesToJob', {"id": response.jid});
+                                            var addedPicturesToJobUrl = Routing.generate('ajax_cto_addedPicturesToJob', {"id": jobId});
                                             $.ajax({
                                                 url: addedPicturesToJobUrl,
                                                 type: "POST",
@@ -290,12 +326,10 @@
                                                 contentType: false   // tell jQuery not to set contentType
                                             })
                                             .done(function() {
-//                                                var returnUrl = Routing.generate('cto_jobs_show', {"id": response.jid});
                                                 window.location.replace(returnUrl);
                                             });
 
                                         } else {
-//                                            var returnUrl = Routing.generate('cto_jobs_show', {"id": response.jid});
                                             window.location.replace(returnUrl);
                                         }
                                     }
@@ -327,7 +361,6 @@
                                         });
 
                                     } else {
-//                                        var returnUrl = Routing.generate('cto_jobs_show', {"id": response.jid});
                                         window.location.replace(returnUrl);
                                     }
                                 }
@@ -338,7 +371,6 @@
                                 }
                                 console.info("erre");
                             });
-//                console.log(values);
                     }
                 }
             };
@@ -499,4 +531,3 @@
         }); // jQuery end
     </script>
 {% endblock %}
-

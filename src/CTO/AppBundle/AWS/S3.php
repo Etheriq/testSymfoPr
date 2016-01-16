@@ -14,9 +14,9 @@ class S3
     protected $s3;
 
     /** @var  string name Bucket in Aws */
-    public $bucket;
+    protected $bucket;
 
-    public $s3url;
+    protected $s3url;
 
     public function __construct($key, $secret, $bucket, $region, $s3url)
     {
@@ -38,7 +38,7 @@ class S3
      * @param string $mimeType
      * @return \Aws\Result|null
      */
-    public function upload($filename, $filePath, $mimeType = 'image/jpg')
+    public function upload($filename, $filePath, $mimeType = 'image/jpeg')
     {
         $result = null;
         try {

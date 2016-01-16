@@ -7,7 +7,7 @@ services:
     cto.twigExtension.monthTranslate:
         class: CTO\AppBundle\TwigExtension\AppExtension
         public: false
-        arguments: [@doctrine.orm.entity_manager]
+        arguments: [@doctrine.orm.entity_manager, %aws_s3_base_url%]
         tags:
             - { name: twig.extension }
 

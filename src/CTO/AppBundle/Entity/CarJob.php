@@ -310,7 +310,7 @@ class CarJob implements \JsonSerializable
     /**
      * @return Collection
      */
-    public function getFiles()
+    public function getPictures()
     {
         return $this->pictures;
     }

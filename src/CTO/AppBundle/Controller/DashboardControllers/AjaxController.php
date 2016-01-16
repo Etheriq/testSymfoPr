@@ -7,10 +7,13 @@ use CTO\AppBundle\Entity\AdminUser;
 use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
+use CTO\AppBundle\Entity\JobPicture;
 use Doctrine\ORM\EntityManager;
+use finfo;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -56,7 +59,7 @@ class AjaxController extends Controller
 
         return new JsonResponse([
             "categories" => $categories,
-            "masters" => $masters
+            "masters" => $masters,
         ]);
     }
 
@@ -72,16 +75,74 @@ class AjaxController extends Controller
     }
 
     /**
+     * @param $id
+     * @param Request $request
      * @return JsonResponse
+     *
      * @Route("/cto/ajax/addedPicturesToJob/{id}", name="ajax_cto_addedPicturesToJob", options={"expose" = true})
      * @Method("POST")
      */
     public function addPicturesToJobAction($id, Request $request)
     {
-        $q = $request->get('ds', "not sended");
-        $d = 'ds';
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        $job = $em->getRepository("CTOAppBundle:CarJob")->find((int)$id);
+        $files = $request->files->all();
 
-        return new JsonResponse(["status" => "ok"], 200);
+        if ($job and $job instanceof CarJob) {
+            $ctoId = $job->getClient()->getCto()->getId();
+            $s3 = $this->get("cto.aws.s3");
+
+            /** @var UploadedFile $file */
+            foreach ($files as $file) {
+                if ($file instanceof UploadedFile) {
+
+                    $filePath = $file->getRealPath();
+                    $fileName = $file->getClientOriginalName();
+                    $fileInfo = new finfo(FILEINFO_MIME_TYPE);
+                    $mimeType = $fileInfo->file($filePath);
+                    $name = "pri4a_id_{$ctoId}/job_id_{$job->getId()}" . "__" . $fileName . "__" . uniqid() . ".jpg";
+
+                    if ($s3->upload($name, $filePath, $mimeType)) {
+                        $picture = new JobPicture();
+                        $picture
+                            ->setPath($name)
+                            ->setJob($job);
+                        $em->persist($picture);
+                        $job->addPicture($picture);
+                    }
+                }
+            }
+            $em->flush();
+
+            return new JsonResponse(["status" => "ok"], 200);
+        }
+
+        return new JsonResponse(["status" => "fail"], 400);
+    }
+
+    /**
+     * @param JobPicture $picture
+     * @return JsonResponse
+     *
+     * @Route("/cto/ajax/removePictureFromJob/{id}", name="ajax_cto_removePictureFromJob", options={"expose" = true})
+     * @Method("POST")
+     */
+    public function removePictureFromJobAction(JobPicture $picture)
+    {
+        $job = $picture->getJob();
+        $s3 = $this->get("cto.aws.s3");
+        if ($s3->remove($picture->getPath())) {
+            /** @var EntityManager $em */
+            $em = $this->getDoctrine()->getManager();
+            $job->removePicture($picture);
+            $em->remove($picture);
+            $em->flush();
+
+            return new JsonResponse(["status" => "ok"], 200);
+        }
+
+        return new JsonResponse(["status" => "fail"], 400);
     }
 
     /**

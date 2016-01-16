@@ -191,6 +191,7 @@ class JobsController extends JsonController
         return [
             'job' => $carJob->jsonSerialize(),
             'jobId' => $carJob->getId(),
+            'pictures' => $carJob->getPictures()->count() ? $carJob->getPictures() : [],
             'jobClientId' => $carJob->getClient()->getId(),
             'title' => 'Редагування замовлення',
             'back' => $carJob->getId()
