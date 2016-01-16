@@ -15,6 +15,7 @@
     "jsonform": "*",
     "selectize": "0.12.1",
     "eonasdan-bootstrap-datetimepicker": "~4.15.35",
-    "fullcalendar": "~2.4.0"
+    "fullcalendar": "~2.4.0",
+    "jquery-colorbox": "colorbox#~1.6.3"
   }
 }

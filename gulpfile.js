@@ -17,7 +17,8 @@ gulp.task('vendors-css', function () {
         'web_src/frontend-vendors/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
         'web_src/frontend-vendors/selectize/dist/css/selectize.css',
         'web_src/frontend-vendors/selectize/dist/css/selectize.bootstrap3.css',
-        'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.css'
+        'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.css',
+        'web_src/frontend-vendors/jquery-colorbox/example3/colorbox.css'
     ])
         .pipe(concat('vendors.min.css'))
         .pipe(uglifycss())
@@ -50,7 +51,8 @@ gulp.task('vendors-js', function() {
         'web_src/frontend-vendors/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
         'web_src/frontend-vendors/selectize/dist/js/standalone/selectize.js',
         'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.js',
-        'web_src/frontend-vendors/fullcalendar/dist/lang-all.js'
+        'web_src/frontend-vendors/fullcalendar/dist/lang-all.js',
+        'web_src/frontend-vendors/jquery-colorbox/jquery.colorbox.js'
     ])
         .pipe(concat('vendors-js.min.js'))
         .pipe(minifyJs())
