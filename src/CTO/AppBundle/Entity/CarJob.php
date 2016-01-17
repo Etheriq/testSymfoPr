@@ -47,6 +47,11 @@ class CarJob implements \JsonSerializable
     protected $pictures;
 
     /**
+     * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoUser", inversedBy="jobs")
+     */
+    protected $cto;
+
+    /**
      * @Assert\NotBlank(message="Обов'язкове поле")
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoClient", inversedBy="carJobs")
      */
@@ -333,5 +338,24 @@ class CarJob implements \JsonSerializable
     public function removePicture(JobPicture $picture)
     {
         $this->pictures->removeElement($picture);
+    }
+
+    /**
+     * @return CtoUser
+     */
+    public function getCto()
+    {
+        return $this->cto;
+    }
+
+    /**
+     * @param CtoUser $cto
+     * @return CarJob
+     */
+    public function setCto(CtoUser $cto)
+    {
+        $this->cto = $cto;
+
+        return $this;
     }
 }

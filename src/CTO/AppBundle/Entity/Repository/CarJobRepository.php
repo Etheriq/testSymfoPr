@@ -2,8 +2,10 @@
 
 namespace CTO\AppBundle\Entity\Repository;
 
+use Carbon\Carbon;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
+use CTO\AppBundle\Entity\DTO\StatisticFilterDTO;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 
@@ -149,5 +151,46 @@ class CarJobRepository extends EntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param CtoUser $ctoUser
+     * @param StatisticFilterDTO $filterDTO
+     * @return array
+     */
+    public function getStatisticsWithFilters(CtoUser $ctoUser, StatisticFilterDTO $filterDTO)
+    {
+        $qb = $this->createQueryBuilder("j")
+            ->select("j, carCat, paidSal, catName, masterName, catDescr, paidMaster ")
+            ->leftjoin("j.carCategories", "carCat")
+            ->leftjoin("j.paidSalaryJob", "paidSal")
+            ->leftJoin("carCat.jobCategory", "catName")
+            ->leftJoin("carCat.master", "masterName")
+            ->leftJoin("carCat.jobDescriptions", "catDescr")
+            ->leftJoin("paidSal.master", "paidMaster")
+            ->where("j.cto = :cto")->setParameter("cto", $ctoUser);
+        if ($filterDTO->getCategory()) {
+            $qb
+                ->andWhere("carCat.jobCategory = :category")->setParameter("category", $filterDTO->getCategory());
+        }
+        if (count($filterDTO->getMasters())) {
+            $qb
+                ->andWhere("carCat.master IN (:masters)")
+                ->orWhere("paidSal.master IN (:masters)")->setParameter("masters", array_values($filterDTO->getMasters()->getValues()));
+        }
+        if ($filterDTO->getDateFrom()) {
+            $qb
+                ->andWhere("j.jobDate >= :fromDate")->setParameter("fromDate", Carbon::createFromFormat("d.m.Y", $filterDTO->getDateFrom())->startOfDay());
+        }
+        if ($filterDTO->getDateTo()) {
+            $qb
+                ->andWhere("j.jobDate <= :toDate")->setParameter("toDate", Carbon::createFromFormat("d.m.Y", $filterDTO->getDateTo())->startOfDay());
+        }
+
+        $qb
+            ->orderBy("j.jobDate", "DESC")
+            ->orderBy("j.id", "DESC");
+
+        return $qb->getQuery()->getResult();
     }
 }

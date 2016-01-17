@@ -57,6 +57,11 @@ class CtoUser extends BaseUser
     protected $city;
 
     /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\CarJob", mappedBy="cto", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $jobs;
+
+    /**
      * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Master", mappedBy="cto", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $masters;
@@ -68,6 +73,7 @@ class CtoUser extends BaseUser
         $this->setBlocked(false);
         $this->clients = new ArrayCollection();
         $this->masters = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     /**
@@ -212,5 +218,35 @@ class CtoUser extends BaseUser
     public function removeMaster(Master $master)
     {
         $this->masters->removeElement($master);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getJobs()
+    {
+        return $this->jobs;
+    }
+
+    /**
+     * @param CarJob $job
+     * @return CtoUser
+     */
+    public function addJob(CarJob $job)
+    {
+        if (!$this->getJobs()->contains($job)) {
+            $job->setCto($this);
+            $this->jobs->add($job);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param CarJob $job
+     */
+    public function removeJob(CarJob $job)
+    {
+        $this->jobs->removeElement($job);
     }
 }

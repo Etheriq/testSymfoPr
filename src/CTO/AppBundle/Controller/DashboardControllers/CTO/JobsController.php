@@ -164,6 +164,7 @@ class JobsController extends JsonController
             $this->handleJsonForm($form, $request);
 
             $carJob->getClient()->setLastVisitDate(new \DateTime('now'));
+            $carJob->setCto($this->getUser());
             $carJob->setTmpHash(uniqid("", true));
 
             $em->persist($carJob);
