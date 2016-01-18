@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -62,15 +63,22 @@ class ClientsController extends Controller
     {
         $client = new CtoClient();
         $form = $this->createForm(new CtoClientType(), $client);
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        /** @var CtoUser $user */
+        $user = $this->getUser();
 
         if ($request->getMethod() == "POST") {
             $form->handleRequest($request);
-            if ($form->isValid()) {
-                /** @var EntityManager $em */
-                $em = $this->getDoctrine()->getManager();
-                /** @var CtoUser $user */
-                $user = $this->getUser();
 
+            $telCheck = $em->getRepository("CTOAppBundle:CtoClient")->findOneBy(['phone' => $client->getPhone()]);
+
+            if ($telCheck) {
+                $formPhoneError = new FormError("Цей телефон вже використовується іншим клієнтом");
+                $form->get("phone")->addError($formPhoneError);
+            }
+
+            if ($form->isValid()) {
                 $client
                     ->setLastVisitDate(new DateTime('now'))
                     ->setCity($user->getCity());
@@ -241,14 +249,21 @@ class ClientsController extends Controller
     {
         $client = new CtoClient();
         $form = $this->createForm(new CtoClientForModalType(), $client);
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        /** @var CtoUser $user */
+        $user = $this->getUser();
 
         if ($request->getMethod() == "POST") {
             $form->handleRequest($request);
+
+            $telCheck = $em->getRepository("CTOAppBundle:CtoClient")->findOneBy(['phone' => $client->getPhone()]);
+
+            if ($telCheck) {
+                $formPhoneError = new FormError("Цей телефон вже використовується іншим клієнтом");
+                $form->get("phone")->addError($formPhoneError);
+            }
             if ($form->isValid()) {
-                /** @var EntityManager $em */
-                $em = $this->getDoctrine()->getManager();
-                /** @var CtoUser $user */
-                $user = $this->getUser();
 
                 $client
                     ->setLastVisitDate(new DateTime('now'))
