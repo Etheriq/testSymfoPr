@@ -8,7 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class StatisticFilterDTOType extends AbstractType
+class StatisticsMastersFilterDTOType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -16,11 +16,6 @@ class StatisticFilterDTOType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('category', EntityType::class, [
-                "class" => 'CTOAppBundle:JobCategory',
-                "choice_label" => "name",
-                "empty_value" => "Виберіть категорію"
-            ])
             ->add('dateFrom', TextType::class, [
                 'attr' => ['placeholder' => 'Дата візиту З', 'class' => 'form-control date-picker-cto']
             ])
@@ -45,7 +40,7 @@ class StatisticFilterDTOType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'CTO\AppBundle\Entity\DTO\StatisticFilterDTO',
+            'data_class' => 'CTO\AppBundle\Entity\DTO\StatisticsMastersFilterDTO',
         ]);
     }
 
@@ -54,7 +49,7 @@ class StatisticFilterDTOType extends AbstractType
      */
     public function getName()
     {
-        return "stat_filter";
+        return "stat_masters_filter";
     }
 
     public function getBlockPrefix()

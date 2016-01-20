@@ -192,13 +192,15 @@ class ClientsController extends Controller
     }
 
     /**
+     * @param CtoClient $ctoClient
+     * @param $tabName
+     * @param Request $request
+     * @return array
+     *
      * @Route("/show/{slug}/{tabName}", name="cto_client_show", defaults={"tabName" = "info"}, requirements={"tabName" = "info|jobs"})
      * @Method({"GET", "POST"})
      * @ParamConverter("ctoClient", class="CTOAppBundle:CtoClient", options={"slug" = "slug"})
      * @Template()
-     * @param CtoClient $ctoClient
-     * @param $tabName
-     * @return array
      */
     public function showAction(CtoClient $ctoClient, $tabName, Request $request)
     {

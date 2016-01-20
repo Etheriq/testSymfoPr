@@ -2,9 +2,14 @@
 
 namespace CTO\AppBundle\Controller\DashboardControllers\CTO;
 
+use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\DTO\StatisticFilterDTO;
+use CTO\AppBundle\Entity\DTO\StatisticsMastersFilterDTO;
+use CTO\AppBundle\Entity\Master;
+use CTO\AppBundle\Entity\PaidSalaryJob;
 use CTO\AppBundle\Form\DTO\StatisticFilterDTOType;
+use CTO\AppBundle\Form\DTO\StatisticsMastersFilterDTOType;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -22,27 +27,62 @@ class StatisticsController extends Controller
 {
     /**
      * @param Request $request
+     * @param $tabName
      * @return array
      *
-     * @Route("/", name="cto_statistics_filter")
+     * @Route("/{tabName}", name="cto_statistics_filter", defaults={"tabName" = "general"}, requirements={"tabName" = "general|masters"})
      * @Method({"GET", "POST"})
      * @Template()
      */
-    public function filterAction(Request $request)
+    public function filterAction(Request $request, $tabName)
     {
         /** @var CtoUser $ctoUser */
         $ctoUser = $this->getUser();
-        $filterDTO = new StatisticFilterDTO();
-        $form = $this->createForm(StatisticFilterDTOType::class, $filterDTO, ["cto" => $ctoUser]);
-        $form->handleRequest($request);
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
 
-        $jobs = $em->getRepository("CTOAppBundle:CarJob")->getStatisticsWithFilters($ctoUser, $filterDTO);
+        // General
+        $filterDTO = new StatisticFilterDTO();
+        $formGeneral = $this->createForm(StatisticFilterDTOType::class, $filterDTO);
+        $formGeneral->handleRequest($request);
+        /** @var CarJob[] $jobs */
+        $jobs = $tabName == "general" ? $em->getRepository("CTOAppBundle:CarJob")->getStatisticsWithFilters($ctoUser, $filterDTO) : [];
+
+        // Masters
+        $filterMastersDTO = new StatisticsMastersFilterDTO();
+        $formMasters = $this->createForm(StatisticsMastersFilterDTOType::class, $filterMastersDTO);
+        $formMasters->handleRequest($request);
+        /** @var PaidSalaryJob[] $masters */
+        $masters = $tabName == "masters" ? $em->getRepository("CTOAppBundle:PaidSalaryJob")->getStatisticsWithMastersFilters($ctoUser, $filterMastersDTO) : [];
+        $getJobCostSpentSumm = $em->getRepository("CTOAppBundle:CarJob")->getStatisticsCostAndPaidSumByPaidMasters($ctoUser, $filterMastersDTO);
+
+        $forMastersStatistics = [];
+        if ($filterMastersDTO->getMasters()) {
+            /** @var Master $master */
+            foreach ($filterMastersDTO->getMasters() as $master) {
+                $forMastersStatistics[$master->getId()] = [
+                    "name" => $master->getFullName(),
+                    "sum" => 0
+                ];
+            }
+            foreach ($masters as $paid) {
+                if (array_key_exists($paid->getMaster()->getId(), $forMastersStatistics)) {
+                    $forMastersStatistics[$paid->getMaster()->getId()]['sum'] = $forMastersStatistics[$paid->getMaster()->getId()]['sum'] + $paid->getPrice();
+                }
+            }
+        }
 
         return [
-            "filterForm" => $form->createView(),
-            "jobs" => $jobs
+            "filterForm" => $formGeneral->createView(),
+            "filterMastersForm" => $formMasters->createView(),
+            "jobs" => $jobs,
+            "masters" => $masters,
+            "selectedMasters" => $forMastersStatistics,
+            "totalSums" => [
+                "cost" => $getJobCostSpentSumm['cost'],
+                "spend" => $getJobCostSpentSumm['spend']
+            ],
+            "tabName" => $tabName,
         ];
     }
 }

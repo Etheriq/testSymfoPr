@@ -10,7 +10,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * Class PaidSalaryJob
  *
  * @ORM\Table(name="paidSalaryJob")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CTO\AppBundle\Entity\Repository\PaidSalaryJobRepository")
  */
 class PaidSalaryJob implements \JsonSerializable
 {

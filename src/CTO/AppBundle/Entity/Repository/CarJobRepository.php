@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\DTO\StatisticFilterDTO;
+use CTO\AppBundle\Entity\DTO\StatisticsMastersFilterDTO;
 use DateTime;
 use Doctrine\ORM\EntityRepository;
 
@@ -192,5 +193,32 @@ class CarJobRepository extends EntityRepository
             ->orderBy("j.id", "DESC");
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param CtoUser $ctoUser
+     * @param StatisticsMastersFilterDTO $filterMastersDTO
+     * @return mixed
+     */
+    public function getStatisticsCostAndPaidSumByPaidMasters(CtoUser $ctoUser, StatisticsMastersFilterDTO $filterMastersDTO)
+    {
+        $qb = $this->createQueryBuilder("j")
+            ->select("sum(j.totalCost) as cost, sum(j.totalSpend) as spend")
+            ->where("j.cto = :cto")->setParameter("cto", $ctoUser);
+        if (count($filterMastersDTO->getMasters())) {
+            $qb
+                ->leftJoin("j.paidSalaryJob", "paidSal")
+                ->andWhere("paidSal.master IN (:master)")->setParameter("master", array_values($filterMastersDTO->getMasters()->getValues()));
+        }
+        if ($filterMastersDTO->getDateFrom()) {
+            $qb
+                ->andWhere("j.jobDate >= :fromDate")->setParameter("fromDate", Carbon::createFromFormat("d.m.Y", $filterMastersDTO->getDateFrom())->startOfDay());
+        }
+        if ($filterMastersDTO->getDateTo()) {
+            $qb
+                ->andWhere("j.jobDate <= :toDate")->setParameter("toDate", Carbon::createFromFormat("d.m.Y", $filterMastersDTO->getDateTo())->startOfDay());
+        }
+
+        return $qb->getQuery()->getSingleResult();
     }
 }
