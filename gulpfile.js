@@ -84,13 +84,20 @@ gulp.task('images', function(){
         .pipe(gulp.dest('web/img/'));
 });
 
+gulp.task('imagesColorBox', function(){
+    gulp.src([
+            'web_src/frontend-vendors/jquery-colorbox/example3/images/*'
+        ])
+        .pipe(gulp.dest('web/css/images/'));
+});
+
 gulp.task('clean', function () {
     return gulp.src(['web/css/*', 'web/js/*', 'web/fonts/*', 'web/img/*'])
         .pipe(clean());
 });
 
 gulp.task('default', ['clean'], function () {
-    var tasks = ['vendors-css', 'custom-css', 'vendors-js', 'custom-js', 'fonts', 'images'];
+    var tasks = ['vendors-css', 'custom-css', 'vendors-js', 'custom-js', 'fonts', 'images', 'imagesColorBox'];
 
     tasks.forEach(function (val) {
         gulp.start(val);
