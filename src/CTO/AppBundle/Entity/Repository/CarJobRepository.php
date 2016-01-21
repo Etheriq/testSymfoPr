@@ -203,7 +203,7 @@ class CarJobRepository extends EntityRepository
     public function getStatisticsCostAndPaidSumByPaidMasters(CtoUser $ctoUser, StatisticsMastersFilterDTO $filterMastersDTO)
     {
         $qb = $this->createQueryBuilder("j")
-            ->select("sum(j.totalCost) as cost, sum(j.totalSpend) as spend")
+            ->select("distinct j, sum(j.totalCost) as cost, sum(j.totalSpend) as spend")
             ->where("j.cto = :cto")->setParameter("cto", $ctoUser);
         if (count($filterMastersDTO->getMasters())) {
             $qb
