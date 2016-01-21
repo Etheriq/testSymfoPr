@@ -29,7 +29,7 @@ class CtoMasterController extends Controller
         /** @var EntityManager $em */
         $em = $this->getDoctrine()->getManager();
 
-        $mastersResult = $em->getRepository("CTOAppBundle:Master")->findAll();
+        $mastersResult = $em->getRepository("CTOAppBundle:Master")->findBy(['cto' => $this->getUser()]);
         $paginator = $this->get('knp_paginator');
         $masters = $paginator->paginate(
             $mastersResult,
