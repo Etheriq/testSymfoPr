@@ -10,6 +10,7 @@ use CTO\AppBundle\Entity\Master;
 use CTO\AppBundle\Entity\PaidSalaryJob;
 use CTO\AppBundle\Form\DTO\StatisticFilterDTOType;
 use CTO\AppBundle\Form\DTO\StatisticsMastersFilterDTOType;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -54,7 +55,27 @@ class StatisticsController extends Controller
         $formMasters->handleRequest($request);
         /** @var PaidSalaryJob[] $masters */
         $masters = $tabName == "masters" ? $em->getRepository("CTOAppBundle:PaidSalaryJob")->getStatisticsWithMastersFilters($ctoUser, $filterMastersDTO) : [];
-        $getJobCostSpentSumm = $em->getRepository("CTOAppBundle:CarJob")->getStatisticsCostAndPaidSumByPaidMasters($ctoUser, $filterMastersDTO);
+        $getJobCostSpentSumm = $em->getRepository("CTOAppBundle:PaidSalaryJob")->getStatisticsWithMastersFilters($ctoUser, $filterMastersDTO);
+
+        $array = new ArrayCollection();
+
+        /** @var PaidSalaryJob $paid */
+        foreach ($getJobCostSpentSumm as $paid) {
+            if (!$array->contains($paid->getCarJob())) {
+                $array->add($paid->getCarJob());
+            }
+        }
+
+        $result = [
+            "cost" => 0,
+            "spend" => 0
+        ];
+
+        /** @var CarJob $job */
+        foreach ($array as $job) {
+            $result['cost'] += $job->getTotalCost();
+            $result['spend'] += $job->getTotalSpend();
+        }
 
         $forMastersStatistics = [];
         if ($filterMastersDTO->getMasters()) {
@@ -62,7 +83,7 @@ class StatisticsController extends Controller
             foreach ($filterMastersDTO->getMasters() as $master) {
                 $forMastersStatistics[$master->getId()] = [
                     "name" => $master->getFullName(),
-                    "sum" => 0
+                    "sum" => 0,
                 ];
             }
             foreach ($masters as $paid) {
@@ -78,10 +99,7 @@ class StatisticsController extends Controller
             "jobs" => $jobs,
             "masters" => $masters,
             "selectedMasters" => $forMastersStatistics,
-            "totalSums" => [
-                "cost" => $getJobCostSpentSumm['cost'],
-                "spend" => $getJobCostSpentSumm['spend']
-            ],
+            "totalSums" => $result,
             "tabName" => $tabName,
         ];
     }

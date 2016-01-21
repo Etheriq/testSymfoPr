@@ -3,6 +3,7 @@
 namespace CTO\AppBundle\Entity\Repository;
 
 use Carbon\Carbon;
+use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\DTO\StatisticsMastersFilterDTO;
 use Doctrine\ORM\EntityRepository;
