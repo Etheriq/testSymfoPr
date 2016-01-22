@@ -39,7 +39,7 @@ class CtoClientRepository extends EntityRepository
     public function listClientwWithSorting(CtoUser $user)
     {
         return $this->getEntityManager()
-            ->createQuery('SELECT u From CTOAppBundle:CtoClient u WHERE u.cto = :ctoUser order by u.lastVisitDate DESC ')->setParameter('ctoUser', $user);
+            ->createQuery('SELECT u From CTOAppBundle:CtoClient u WHERE u.cto = :ctoUser order by u.lastVisitDate ASC ')->setParameter('ctoUser', $user);
     }
 
     public function getUniqueClients($start, $end, $user)

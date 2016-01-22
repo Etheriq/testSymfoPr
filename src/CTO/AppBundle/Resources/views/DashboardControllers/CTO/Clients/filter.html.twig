@@ -35,7 +35,8 @@
                 <thead>
                 <tr>
                     {% if paginator %}
-                        <th class="text-center">{{ knp_pagination_sortable(clients, '#', 'u.id') }}</th>
+                        {#<th class="text-center">{{ knp_pagination_sortable(clients, '#', 'u.id') }}</th>#}
+                        <th class="text-center">#</th>
                         <th>{{ knp_pagination_sortable(clients, 'Ім\'я', 'u.firstName') }}</th>
                         <th>{{ knp_pagination_sortable(clients, 'Прізвище', 'u.lastName') }}</th>
                         <th>Телефон</th>
@@ -64,7 +65,7 @@
                 <tbody>
                 {% for client in clients %}
                     <tr>
-                        <td class="text-center">{{ client.id }}</td>
+                        <td class="text-center">{{ loop.index }}</td>
                         <td>{{ client.firstName }}</td>
                         <td>{{ client.lastName }}</td>
                         <td>{{ client.phone }}</td>
