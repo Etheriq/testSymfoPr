@@ -114,6 +114,7 @@
                 <h5>&nbsp;&nbsp;&nbsp;{{ category.jobCategory.name }}</h5>
                 {% if category.jobDescriptions | length > 0 %}
                     <div class="well well-sm">
+                        <p><span class="font-bolder">Майстер: </span>{{ category.master.fullName }}</p>
                         {% for description in category.jobDescriptions %}
                             <p><span class="font-bolder">Опис: </span>{{ description.description }}</p>
                             <p><span class="font-bolder">Ціна: </span>{{ description.price | number_format(2, '.', ',') }} грн.</p>
@@ -126,10 +127,11 @@
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4 class="text-center"><u>Витрати:</u></h4>
             {% if job.paidSalaryJob | length > 0 %}
-                <h5>&nbsp;&nbsp;&nbsp;Виплачена зарплата</h5>
+                <h5>&nbsp;&nbsp;&nbsp;Виплачена зарплата:</h5>
                 <div class="well well-sm">
                     {% for paid in job.paidSalaryJob %}
-                        <p><span class="font-bolder">Кому: </span>{{ paid.description }}</p>
+                        <p><span class="font-bolder">Майстер: </span>{{ paid.master.fullName }}</p>
+                        <p><span class="font-bolder">Нотатки: </span>{{ paid.description }}</p>
                         <p><span class="font-bolder">Сума: </span>{{ paid.price | number_format(2, '.', ',') }} грн.</p>
                     {% endfor %}
                 </div>
