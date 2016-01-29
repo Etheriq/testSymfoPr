@@ -278,6 +278,7 @@ class NotificationsController extends Controller
                             'broadcast' => true
                         ], $this->getParameter('queue_name'), $notification->getWhenSend());
                         $notification->setResqueJobDescription($jobDescription);
+                        $em->flush();
                     }
                 }
 
