@@ -5,11 +5,11 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
-    public function init()
-    {
-        date_default_timezone_set( 'Europe/Kiev' );
-        parent::init();
-    }
+//    public function init()
+//    {
+//        date_default_timezone_set( 'Europe/Kiev' );
+//        parent::init();
+//    }
 
     public function registerBundles()
     {
