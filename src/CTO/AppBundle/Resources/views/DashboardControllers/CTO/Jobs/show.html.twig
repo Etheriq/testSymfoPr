@@ -51,7 +51,8 @@
             <h3>
                 Деталі замовлення
                 <div class="pull-right">
-                    {#<a href="{{ path('cto_jobs_print', {'id': job.id}) }}" target="_blank" class="btn btn-sm btn-info">Роздрукувати</a>#}
+                    <a href="{{ path('cto_jobs_remove', {'id': job.id}) }}" onclick="return confirm('Ви впевнені що хочете видалить?')" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Видалити</a>
+                    <div style="display: inline-block; width: 30px;"></div>
                     <a href="{{ path("cto_jobs_edit", {"id": job.id}) }}" class="btn btn-sm btn-warning">Редагувати замовлення</a>
                     <a href="#" class="btn btn-sm btn-success" id="addRecommendationButton">Додати рекомендацію</a>
                     <a href="{{ path('cto_jobs_addReminder', {'jobId': job.id}) }}" class="btn btn-sm btn-success">Додати нагадування</a>

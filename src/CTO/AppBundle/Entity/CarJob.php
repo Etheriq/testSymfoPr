@@ -63,7 +63,7 @@ class CarJob implements \JsonSerializable
     protected $carCategories;
 
     /**
-     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Notification", mappedBy="carJob")
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Notification", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $notifications;
 

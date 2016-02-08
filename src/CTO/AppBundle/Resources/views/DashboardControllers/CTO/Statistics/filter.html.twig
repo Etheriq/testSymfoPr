@@ -63,7 +63,7 @@
                 {% for job in jobs %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td><a href="{{ path("cto_jobs_show", {"id": job.id}) }}">Завдання</a></td>
+                        <td><a href="{{ path("cto_jobs_show", {"id": job.id}) }}">Завдання_{{ job.id }}</a></td>
                         <td>{{ job.totalCost | number_format(2, '.', ',') }} грн.</td>
                         {% set totalCost = totalCost + job.totalCost %}
                         <td>{{ job.totalSpend | number_format(2, '.', ',') }} грн.</td>
@@ -204,7 +204,7 @@
                     {% for paid in masters %}
                         <tr>
                             <td>{{ loop.index }}</td>
-                            <td><a href="{{ path("cto_jobs_show", {"id": paid.carJob.id }) }}">Завдання</a></td>
+                            <td><a href="{{ path("cto_jobs_show", {"id": paid.carJob.id }) }}">Завдання_{{ paid.carJob.id }}</a></td>
                             <td>{{ paid.carJob.totalCost | number_format(2, '.', ',') }} грн.</td>
                             <td>{{ paid.carJob.totalSpend | number_format(2, '.', ',') }} грн.</td>
                             <td>{{ paid.carJob.jobDate | date("d.m.Y") }}</td>
