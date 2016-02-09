@@ -446,7 +446,11 @@ class NotificationsController extends Controller
                 $now = Carbon::now();
 
                 if ($notification->getWhenSend() < $now) {
-                    $notification->setAutoSending(false);
+                    if ($notification->isAutoSending() and $notification->isSendNow()) {
+                        $notification->setAutoSending(true);
+                    } else {
+                        $notification->setAutoSending(false);
+                    }
                 }
 
                 /** @var EntityManager $em */
