@@ -8,6 +8,7 @@ use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\JobPicture;
+use CTO\AppBundle\Entity\Notification;
 use Doctrine\ORM\EntityManager;
 use finfo;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -119,6 +120,20 @@ class AjaxController extends Controller
         }
 
         return new JsonResponse(["status" => "fail"], 400);
+    }
+
+    /**
+     * @param Notification $notification
+     * @return JsonResponse
+     *
+     * @Route("/cto/ajax/report/{id}/show", name="ajax_cto_getReports", options={"expose" = true})
+     * @Method("POST")
+     */
+    public function showRepostAction(Notification $notification)
+    {
+        return new JsonResponse([
+            "reports" => $notification->getReports()->getValues()
+        ]);
     }
 
     /**

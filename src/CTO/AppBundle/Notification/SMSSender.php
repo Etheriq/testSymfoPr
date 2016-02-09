@@ -5,6 +5,7 @@ namespace CTO\AppBundle\Notification;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\Notification;
+use CTO\AppBundle\Entity\NotificationReport;
 use Doctrine\ORM\EntityManager;
 use Mcfedr\ResqueBundle\Manager\ResqueManager;
 use Mcfedr\ResqueBundle\Worker\WorkerInterface;
@@ -143,15 +144,47 @@ class SMSSender implements WorkerInterface
                         try {
                             $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
                         } catch (\Exception $e) {
+                            $report = new NotificationReport($user);
+                            $report
+                                ->setPhone($user->getPhone())
+                                ->setSendToAdmin(true)
+                                ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                            $this->em->persist($report);
+                            $notification->addReport($report);
+
                             $notification->setStatus(Notification::STATUS_SEND_FAIL);
                             $this->em->flush();
 
                             continue;
                         }
+
+                        $report = new NotificationReport($user);
+                        $report
+                            ->setPhone($user->getPhone())
+                            ->setSendToAdmin(true)
+                            ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                        $this->em->persist($report);
+                        $notification->addReport($report);
                     }
+
+                    $report = new NotificationReport($user);
+                    $report
+                        ->setPhone($user->getPhone())
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
+
                     $notification->setStatus(Notification::STATUS_SEND_OK);
                     $this->em->flush();
                 } catch (\Exception $e) {
+
+                    $report = new NotificationReport($user);
+                    $report
+                        ->setPhone($user->getPhone())
+                        ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
+
                     $notification->setStatus(Notification::STATUS_SEND_FAIL);
                     $this->em->flush();
                 }
@@ -166,15 +199,47 @@ class SMSSender implements WorkerInterface
                 try {
                     $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
                 } catch(\Exception $e) {
+
+                    $report = new NotificationReport($ctoClient);
+                    $report
+                        ->setPhone($ctoClient->getPhone())
+                        ->setSendToAdmin(true)
+                        ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
+
                     $notification->setStatus(Notification::STATUS_SEND_FAIL);
                     $this->em->flush();
 
                     return;
                 }
+
+                $report = new NotificationReport($ctoClient);
+                $report
+                    ->setPhone($ctoClient->getPhone())
+                    ->setSendToAdmin(true)
+                    ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                $this->em->persist($report);
+                $notification->addReport($report);
             }
+
+            $report = new NotificationReport($ctoClient);
+            $report
+                ->setPhone($ctoClient->getPhone())
+                ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+            $this->em->persist($report);
+            $notification->addReport($report);
             $notification->setStatus(Notification::STATUS_SEND_OK);
             $this->em->flush();
         } catch (\Exception $e) {
+
+            $report = new NotificationReport($ctoClient);
+            $report
+                ->setPhone($ctoClient->getPhone())
+                ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+            $this->em->persist($report);
+            $notification->addReport($report);
+
             $notification->setStatus(Notification::STATUS_SEND_FAIL);
             $this->em->flush();
         }

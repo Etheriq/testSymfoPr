@@ -22,6 +22,9 @@
                 <th class="notification-action text-center">
                     Статус
                 </th>
+                <th>
+                    Report
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -61,6 +64,9 @@
                         {% else %}
                             <span style="color: #ba5359;">Помилка відправки</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path("admin_cto_reports", {"id": sentoutItem.id }) }}" target="_blank"> Report </a>
                     </td>
                 </tr>
             {% endfor %}

@@ -324,7 +324,11 @@ class JobsController extends JsonController
                 $now = Carbon::now();
 
                 if ($notification->getWhenSend() < $now) {
-                    $notification->setAutoSending(false);
+                    if ($notification->isAutoSending() and $notification->isSendNow()) {
+                        $notification->setAutoSending(true);
+                    } else {
+                        $notification->setAutoSending(false);
+                    }
                 }
 
                 /** @var EntityManager $em */
@@ -336,7 +340,12 @@ class JobsController extends JsonController
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($notification, $admin);
+//                        $senderSrv->sendNow($notification, $admin);
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => false
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),

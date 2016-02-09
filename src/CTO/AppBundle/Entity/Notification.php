@@ -3,6 +3,8 @@
 namespace CTO\AppBundle\Entity;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -93,6 +95,16 @@ class Notification
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoUser")
      */
     protected $userCto;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\NotificationReport", mappedBy="notification", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $reports;
+
+    public function __construct()
+    {
+        $this->reports = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -360,5 +372,33 @@ class Notification
         $this->jobCategory = $jobCategory;
 
         return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getReports()
+    {
+        return $this->reports;
+    }
+
+    /**
+     * @param NotificationReport $report
+     * @return Notification
+     */
+    public function addReport(NotificationReport $report)
+    {
+        $report->setNotification($this);
+        $this->reports->add($report);
+
+        return $this;
+    }
+
+    /**
+     * @param NotificationReport $report
+     */
+    public function removeReport(NotificationReport $report)
+    {
+        $this->reports->removeElement($report);
     }
 }
