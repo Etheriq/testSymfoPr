@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class NotificationReport
  *
  * @ORM\Table(name="notificationReports")
- * @ORM\Entity()
+ * @ORM\Entity(repositoryClass="CTO\AppBundle\Entity\Repository\NotificationReportRepository")
  */
 class NotificationReport implements \JsonSerializable
 {

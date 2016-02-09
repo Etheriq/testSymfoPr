@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\Notification;
+use CTO\AppBundle\Entity\NotificationReport;
 use CTO\AppBundle\Form\BroadcastType;
 use CTO\AppBundle\Form\JobNotificationReminderType;
 use Doctrine\ORM\EntityManager;
@@ -406,8 +407,13 @@ class NotificationsController extends Controller
      */
     public function showRepostAction(Notification $notification)
     {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        /** @var NotificationReport[] $notifications */
+        $notifications = $em->getRepository("CTOAppBundle:NotificationReport")->findBySomeNotification($notification);
+
         return [
-            "notifications" => $notification->getReports()
+            "notifications" => $notifications
         ];
     }
 

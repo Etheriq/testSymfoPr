@@ -22,8 +22,8 @@
                 <th class="notification-action text-center">
                     Статус
                 </th>
-                <th>
-                    Report
+                <th class="text-center">
+                    Звіт
                 </th>
             </tr>
             </thead>
@@ -56,7 +56,7 @@
                             {{ sentoutItem.jobCategory.name }}
                         {% endif %}
                     </td>
-                    <td style="vertical-align: middle;">
+                    <td style="vertical-align: middle;" class="text-center">
                         {% if sentoutItem.status == constant('CTO\\AppBundle\\Entity\\Notification::STATUS_SEND_OK') %}
                             <span style="color: #0cba59;">Відправлено</span>
                         {% elseif sentoutItem.status == constant('CTO\\AppBundle\\Entity\\Notification::STATUS_ABORTED') %}
@@ -65,8 +65,8 @@
                             <span style="color: #ba5359;">Помилка відправки</span>
                         {% endif %}
                     </td>
-                    <td>
-                        <a href="{{ path("admin_cto_reports", {"id": sentoutItem.id }) }}" target="_blank"> Report </a>
+                    <td class="text-center">
+                        <a href="{{ path("admin_cto_reports", {"id": sentoutItem.id }) }}"> Показати </a>
                     </td>
                 </tr>
             {% endfor %}
