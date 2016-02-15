@@ -5,6 +5,7 @@ namespace CTO\AppBundle\Entity\Repository;
 use Carbon\Carbon;
 use CTO\AppBundle\Entity\CtoClient;
 use CTO\AppBundle\Entity\CtoUser;
+use CTO\AppBundle\Entity\DTO\ExportFilterDTO;
 use CTO\AppBundle\Entity\DTO\StatisticFilterDTO;
 use CTO\AppBundle\Entity\DTO\StatisticsMastersFilterDTO;
 use DateTime;
@@ -220,5 +221,38 @@ class CarJobRepository extends EntityRepository
         }
 
         return $qb->getQuery()->getSingleResult();
+    }
+
+    /**
+     * @param ExportFilterDTO $exportDTO
+     * @return array
+     */
+    public function getDataForExportToCSV(ExportFilterDTO $exportDTO)
+    {
+        $qb = $this->createQueryBuilder("cj")
+            ->select("cj.jobDate as jdate, cat.name as catName, descr.description as description, descr.price as price, cl.fullName as clientName, master.firstName as masterFName, master.lastName as masterLName ")
+            ->leftJoin("cj.client", "cl")
+            ->leftJoin("cj.carCategories", "jobCat")
+            ->leftJoin("jobCat.jobCategory", "cat")
+            ->leftJoin("jobCat.master", "master")
+            ->leftJoin("jobCat.jobDescriptions", "descr");
+        if ($exportDTO->getDateFrom()) {
+            $qb
+                ->andWhere("cj.jobDate >= :fromDate")->setParameter(
+                    "fromDate",
+                    Carbon::createFromFormat("d.m.Y", $exportDTO->getDateFrom())->startOfDay()
+                );
+        }
+        if ($exportDTO->getDateTo()) {
+            $qb
+                ->andWhere("cj.jobDate <= :toDate")->setParameter(
+                    "toDate",
+                    Carbon::createFromFormat("d.m.Y", $exportDTO->getDateTo())->startOfDay()
+                );
+        }
+        $qb
+            ->orderBy("cj.jobDate", "ASC");
+
+        return $qb->getQuery()->getResult();
     }
 }

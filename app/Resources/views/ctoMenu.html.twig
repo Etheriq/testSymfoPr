@@ -37,6 +37,9 @@
                     <li class="{{ 'cto_statistics_' in app.request.get('_route') ? 'active' : '' }}">
                         <a href="{{ path("cto_statistics_filter") }}"><i class="fa fa-line-chart"></i>&nbsp;Статистика</a>
                     </li>
+                    <li class="{{ 'cto_export_' in app.request.get('_route') ? 'active' : '' }}">
+                        <a href="{{ path("cto_export_csv") }}"><i class="fa fa-download"></i>&nbsp;Експорт</a>
+                    </li>
                     <li class="{{ 'cto_notification_' in app.request.get('_route') ? 'active' : '' }}">
                         <a href="{{path('cto_notification_home')}}" ><i class="fa fa-bell"></i>&nbsp;Сповіщення&nbsp;&nbsp;<span id="badge"></span></a>
                     </li>
