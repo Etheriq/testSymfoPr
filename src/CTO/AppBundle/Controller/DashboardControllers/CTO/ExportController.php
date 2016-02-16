@@ -36,6 +36,9 @@ class ExportController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return StreamedResponse
+     *
      * @Route("/csv/do", name="cto_export_csvdo")
      */
     public function doCSVExportAction(Request $request)

@@ -254,6 +254,36 @@
 
                     return;
                 }
+                if (values.car_job.client == '-1') {
+                    res.html('<div class="alert alert-danger" role="alert">Потрібно вибрати клієнта</div>');
+
+                    return;
+                }
+                var checkOnJobCatOrMasterEmpty = false;
+                values.car_job.carCategories.forEach(function(el){
+
+                    if (el.jobCategory == '-1' || el.master == '-1') {
+                        checkOnJobCatOrMasterEmpty = true;
+                    }
+                });
+                if (checkOnJobCatOrMasterEmpty) {
+                    res.html('<div class="alert alert-danger" role="alert">Потрібно вибрати категорію і майстра в виконаному завданні.</div>');
+
+                    return;
+                }
+                var checkOnPaidSalaryMasterEmpty = false;
+                values.car_job.paidSalaryJob.forEach(function(el){
+
+                    if (el.master == '-1') {
+                        checkOnPaidSalaryMasterEmpty = true;
+                    }
+                });
+                if (checkOnPaidSalaryMasterEmpty) {
+                    res.html('<div class="alert alert-danger" role="alert">Потрібно вибрати майстра в блоці *Виплачена зарплата*.</div>');
+
+                    return;
+                }
+
                 /////////////////////////////////////////////////////////////////
 
                 var submitUrl = Routing.generate('cto_jobs_new_fromJSONFORM');
@@ -356,11 +386,15 @@
         $.get(jobCategoriesUrl)
             .success(function(response){
                 if (response.categories.length > 0) {
+                        categoryKeys.push(-1);
+                        categoryObj[-1] = "Виберіть категорію";
                     $.each(response.categories, function(key, value){
                         categoryKeys.push(value.id);
                         categoryObj[value.id] = value.name;
                     });
                     if (response.masters.length > 0) {
+                            masterKeys.push(-1);
+                            masterObj[-1] = "Виберіть майстра";
                         $.each(response.masters, function(key, value){
                             masterKeys.push(value.id);
                             masterObj[value.id] = value.name;
@@ -376,6 +410,7 @@
                         .success(function(responseClient){
                             clients.html('');
                             if (responseClient.clients.length > 0) {
+                                clients.append('<option value="-1">Виберіть клієнта</option>');
                                 $.each(responseClient.clients, function(key, value){
                                     if (clientId == value.id) {
                                         clients.append('<option value="' + value.id + '" selected>' + value.name + '</option>');
