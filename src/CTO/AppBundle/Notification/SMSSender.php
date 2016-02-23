@@ -74,14 +74,39 @@ class SMSSender implements WorkerInterface
             foreach ($users as $user) {
                 try {
                     $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$user->getPhone(), $notification->getDescription());
-                    if ($notification->isAdminCopy()) {
-                        try {
-                            $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
-                        } catch (\Exception $e) {}
-                    }
+                    $report = new NotificationReport($user);
+                    $report
+                        ->setPhone($user->getPhone())
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
                     $notification->setStatus(Notification::STATUS_SEND_OK);
                 } catch (\Exception $e) {
+                    $report = new NotificationReport($user);
+                    $report
+                        ->setPhone($user->getPhone())
+                        ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
                     $notification->setStatus(Notification::STATUS_SEND_FAIL);
+                }
+            }
+            if ($notification->isAdminCopy()) {
+                try {
+                    $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
+                    $report = new NotificationReport($notification->getClientCto());
+                    $report
+                        ->setPhone($admin->getPhone())
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
+                } catch (\Exception $e) {
+                    $report = new NotificationReport($notification->getClientCto());
+                    $report
+                        ->setPhone($admin->getPhone())
+                        ->setSendToAdmin(true)
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
                 }
             }
             $this->em->flush();
@@ -91,14 +116,40 @@ class SMSSender implements WorkerInterface
 
             try {
                 $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$notification->getClientCto()->getPhone(), $notification->getDescription());
-                if ($notification->isAdminCopy()) {
-                    try {
-                        $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
-                    } catch (\Exception $e) {}
-                }
+                $report = new NotificationReport($notification->getClientCto());
+                $report
+                    ->setPhone($notification->getClientCto()->getPhone())
+                    ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                $this->em->persist($report);
+                $notification->addReport($report);
                 $notification->setStatus(Notification::STATUS_SEND_OK);
             } catch (\Exception $e) {
+                $report = new NotificationReport($notification->getClientCto());
+                $report
+                    ->setPhone($notification->getClientCto()->getPhone())
+                    ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                $this->em->persist($report);
+                $notification->addReport($report);
                 $notification->setStatus(Notification::STATUS_SEND_FAIL);
+            }
+            if ($notification->isAdminCopy()) {
+                try {
+                    $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
+                    $report = new NotificationReport($notification->getClientCto());
+                    $report
+                        ->setPhone($admin->getPhone())
+                        ->setSendToAdmin(true)
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
+                } catch (\Exception $e) {
+                    $report = new NotificationReport($notification->getClientCto());
+                    $report
+                        ->setPhone($admin->getPhone())
+                        ->setSendToAdmin(true)
+                        ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
+                    $this->em->persist($report);
+                }
             }
             $this->em->flush();
         }
@@ -168,27 +219,25 @@ class SMSSender implements WorkerInterface
             if ($notification->isAdminCopy()) {
                 try {
                     $this->clientSMS->sendSMS($this->alfa_sms_name, '+38'.$admin->getPhone(), $notification->getDescription());
+                    $report = new NotificationReport($user);
+                    $report
+                        ->setPhone($admin->getPhone())
+                        ->setSendToAdmin(true)
+                        ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
+                    $this->em->persist($report);
+                    $notification->addReport($report);
                 } catch (\Exception $e) {
                     $report = new NotificationReport($user);
                     $report
-                        ->setPhone($user->getPhone())
+                        ->setPhone($admin->getPhone())
                         ->setSendToAdmin(true)
                         ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
                     $this->em->persist($report);
                     $notification->addReport($report);
 
-                    $notification->setStatus(Notification::STATUS_SEND_FAIL);
-                    $this->em->flush();
                 }
-
-                $report = new NotificationReport($user);
-                $report
-                    ->setPhone($user->getPhone())
-                    ->setSendToAdmin(true)
-                    ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
-                $this->em->persist($report);
-                $notification->addReport($report);
             }
+            $this->em->flush();
 
             return;
         }
@@ -202,7 +251,7 @@ class SMSSender implements WorkerInterface
 
                     $report = new NotificationReport($ctoClient);
                     $report
-                        ->setPhone($ctoClient->getPhone())
+                        ->setPhone($admin->getPhone())
                         ->setSendToAdmin(true)
                         ->setStatus(NotificationReport::REPORT_STATUS_FAILED);
                     $this->em->persist($report);
@@ -216,7 +265,7 @@ class SMSSender implements WorkerInterface
 
                 $report = new NotificationReport($ctoClient);
                 $report
-                    ->setPhone($ctoClient->getPhone())
+                    ->setPhone($admin->getPhone())
                     ->setSendToAdmin(true)
                     ->setStatus(NotificationReport::REPORT_STATUS_SENDED);
                 $this->em->persist($report);
