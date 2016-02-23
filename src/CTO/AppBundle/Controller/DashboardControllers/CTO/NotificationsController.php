@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\Notification;
+use CTO\AppBundle\Entity\NotificationReport;
 use CTO\AppBundle\Form\BroadcastType;
 use CTO\AppBundle\Form\JobNotificationReminderType;
 use Doctrine\ORM\EntityManager;
@@ -120,7 +121,11 @@ class NotificationsController extends Controller
                 $now = Carbon::now();
 
                 if ($notification->getWhenSend() < $now) {
-                    $notification->setAutoSending(false);
+                    if ($notification->isAutoSending() and $notification->isSendNow()) {
+                        $notification->setAutoSending(true);
+                    } else {
+                        $notification->setAutoSending(false);
+                    }
                 }
 
                 /** @var EntityManager $em */
@@ -133,12 +138,17 @@ class NotificationsController extends Controller
                     $admin = $this->getUser();
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($notification, $admin);
+//                        $senderSrv->sendNow($notification, $admin);
+
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => false
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
-                            'broadcast' => false,
-                            'adminId' => $admin->getId()
+                            'broadcast' => false
                         ], $this->getParameter('queue_name'), $notification->getWhenSend());
                         $notification->setResqueJobDescription($jobDescription);
                     }
@@ -195,7 +205,11 @@ class NotificationsController extends Controller
                 $now = Carbon::now();
 
                 if ($notification->getWhenSend() < $now) {
-                    $notification->setAutoSending(false);
+                    if ($notification->isAutoSending() and $notification->isSendNow()) {
+                        $notification->setAutoSending(true);
+                    } else {
+                        $notification->setAutoSending(false);
+                    }
                 }
 
                 /** @var EntityManager $em */
@@ -207,12 +221,17 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($newNotification->isSendNow()) {
-                        $senderSrv->sendNow($newNotification, $admin);
+//                        $senderSrv->sendNow($newNotification, $admin);
+
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $newNotification->getId(),
+                            'broadcast' => false
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $newNotification->getId(),
-                            'broadcast' => false,
-                            'adminId' => $admin->getId()
+                            'broadcast' => false
                         ], $this->getParameter('queue_name'), $newNotification->getWhenSend());
                         $newNotification->setResqueJobDescription($jobDescription);
                     }
@@ -275,13 +294,25 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($notification, $admin, true);
+//                        $senderSrv->sendNow($notification, $admin, true);
+
+//                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+//                            'notificationId' => $notification->getId(),
+//                            'broadcast' => true,
+//                        ]);
+
+                        $senderSrv->execute([
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => true,
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
                             'broadcast' => true
                         ], $this->getParameter('queue_name'), $notification->getWhenSend());
                         $notification->setResqueJobDescription($jobDescription);
+
                         $em->flush();
                     }
                 }
@@ -337,7 +368,13 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($notification, $admin, true);
+//                        $senderSrv->sendNow($notification, $admin, true);
+
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => true
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
@@ -357,6 +394,26 @@ class NotificationsController extends Controller
         return [
             'form' => $form->createView(),
             'method' => 'Редагувати'
+        ];
+    }
+
+    /**
+     * @param Notification $notification
+     * @return JsonResponse
+     *
+     * @Route("/report/{id}/show", name="admin_cto_reports")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showRepostAction(Notification $notification)
+    {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+        /** @var NotificationReport[] $notifications */
+        $notifications = $em->getRepository("CTOAppBundle:NotificationReport")->findBySomeNotification($notification);
+
+        return [
+            "notifications" => $notifications
         ];
     }
 

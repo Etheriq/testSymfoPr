@@ -17,7 +17,8 @@ gulp.task('vendors-css', function () {
         'web_src/frontend-vendors/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css',
         'web_src/frontend-vendors/selectize/dist/css/selectize.css',
         'web_src/frontend-vendors/selectize/dist/css/selectize.bootstrap3.css',
-        'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.css'
+        'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.css',
+        'web_src/frontend-vendors/jquery-colorbox/example3/colorbox.css'
     ])
         .pipe(concat('vendors.min.css'))
         .pipe(uglifycss())
@@ -50,7 +51,8 @@ gulp.task('vendors-js', function() {
         'web_src/frontend-vendors/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js',
         'web_src/frontend-vendors/selectize/dist/js/standalone/selectize.js',
         'web_src/frontend-vendors/fullcalendar/dist/fullcalendar.js',
-        'web_src/frontend-vendors/fullcalendar/dist/lang-all.js'
+        'web_src/frontend-vendors/fullcalendar/dist/lang-all.js',
+        'web_src/frontend-vendors/jquery-colorbox/jquery.colorbox.js'
     ])
         .pipe(concat('vendors-js.min.js'))
         .pipe(minifyJs())
@@ -82,13 +84,20 @@ gulp.task('images', function(){
         .pipe(gulp.dest('web/img/'));
 });
 
+gulp.task('imagesColorBox', function(){
+    gulp.src([
+            'web_src/frontend-vendors/jquery-colorbox/example3/images/*'
+        ])
+        .pipe(gulp.dest('web/css/images/'));
+});
+
 gulp.task('clean', function () {
     return gulp.src(['web/css/*', 'web/js/*', 'web/fonts/*', 'web/img/*'])
         .pipe(clean());
 });
 
 gulp.task('default', ['clean'], function () {
-    var tasks = ['vendors-css', 'custom-css', 'vendors-js', 'custom-js', 'fonts', 'images'];
+    var tasks = ['vendors-css', 'custom-css', 'vendors-js', 'custom-js', 'fonts', 'images', 'imagesColorBox'];
 
     tasks.forEach(function (val) {
         gulp.start(val);

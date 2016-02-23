@@ -6,6 +6,7 @@
             <h3>
                 {{ client.firstName }} {{ client.lastName }}
                 <div class="pull-right">
+                    <a href="{{ path('cto_jobs_new', {'clientId': client.id}) }}" class="btn btn-sm btn-success">Додати завдання</a>
                     <a href="{{ path('cto_client_home') }}" class="btn btn-sm btn-default"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;&nbsp;Назад</a>
                 </div>
             </h3>

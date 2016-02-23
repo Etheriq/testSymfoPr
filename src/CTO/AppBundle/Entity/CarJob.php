@@ -42,6 +42,16 @@ class CarJob implements \JsonSerializable
     protected $tmpHash;
 
     /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\JobPicture", mappedBy="job", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $pictures;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoUser", inversedBy="jobs")
+     */
+    protected $cto;
+
+    /**
      * @Assert\NotBlank(message="Обов'язкове поле")
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CtoClient", inversedBy="carJobs")
      */
@@ -53,7 +63,7 @@ class CarJob implements \JsonSerializable
     protected $carCategories;
 
     /**
-     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Notification", mappedBy="carJob")
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Notification", mappedBy="carJob", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     protected $notifications;
 
@@ -92,6 +102,7 @@ class CarJob implements \JsonSerializable
         $this->carCategories = new ArrayCollection();
         $this->paidSalaryJob = new ArrayCollection();
         $this->recommendations = new ArrayCollection();
+        $this->pictures = new ArrayCollection();
         $this->totalCost = 0;
         $this->totalSpend = 0;
         $this->tmpHash = uniqid("", true);
@@ -299,5 +310,52 @@ class CarJob implements \JsonSerializable
     public function removeRecommendation(Recommendation $recommendation)
     {
         $this->recommendations->removeElement($recommendation);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getPictures()
+    {
+        return $this->pictures;
+    }
+
+    /**
+     * @param JobPicture $picture
+     * @return CarJob
+     */
+    public function addPicture(JobPicture $picture)
+    {
+        $picture->setJob($this);
+        $this->pictures->add($picture);
+
+        return $this;
+    }
+
+    /**
+     * @param JobPicture $picture
+     */
+    public function removePicture(JobPicture $picture)
+    {
+        $this->pictures->removeElement($picture);
+    }
+
+    /**
+     * @return CtoUser
+     */
+    public function getCto()
+    {
+        return $this->cto;
+    }
+
+    /**
+     * @param CtoUser $cto
+     * @return CarJob
+     */
+    public function setCto(CtoUser $cto)
+    {
+        $this->cto = $cto;
+
+        return $this;
     }
 }

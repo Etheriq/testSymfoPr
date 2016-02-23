@@ -7,9 +7,13 @@ services:
     cto.twigExtension.monthTranslate:
         class: CTO\AppBundle\TwigExtension\AppExtension
         public: false
-        arguments: [@doctrine.orm.entity_manager]
+        arguments: [@doctrine.orm.entity_manager, %aws_s3_base_url%]
         tags:
             - { name: twig.extension }
+
+    cto.aws.s3:
+        class: CTO\AppBundle\AWS\S3
+        arguments: [%aws_s3_key%, %aws_s3_secret%, %aws_s3_bucket%, %aws_s3_region%, %aws_s3_base_url%]
 
     cto.sms.sender:
         class: CTO\AppBundle\Notification\SMSSender

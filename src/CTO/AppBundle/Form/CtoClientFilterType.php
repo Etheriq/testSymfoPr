@@ -14,6 +14,9 @@ class CtoClientFilterType extends AbstractType
             ->add('fullName', 'text', [
                 'attr' => ['placeholder' => 'Клієнт', 'class' => 'form-control']
             ])
+            ->add('phone', 'text', [
+                'attr' => ['placeholder' => 'Телефон', 'class' => 'form-control']
+            ])
             ->add('dateFrom', 'text', [
                 'attr' => ['placeholder' => 'Дата візиту З', 'class' => 'form-control date-picker-cto']
             ])

@@ -9,10 +9,12 @@ class AppExtension extends \Twig_Extension
 {
     /** @var EntityManager $em */
     protected $em;
+    protected $baseUrl;
 
-    public function __construct(EntityManager $manager)
+    public function __construct(EntityManager $manager, $baseUrl)
     {
         $this->em = $manager;
+        $this->baseUrl = $baseUrl;
     }
 
     public function getFilters()
@@ -20,6 +22,7 @@ class AppExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter('monthTranslate', array($this, 'monthTranslateFilter')),
             new \Twig_SimpleFilter('userNames', array($this, 'transformIdToUsernames')),
+            new \Twig_SimpleFilter('S3Path', array($this, 'S3PathFilter')),
         );
     }
 
@@ -41,6 +44,11 @@ class AppExtension extends \Twig_Extension
         $month['December'] = "Грудень";
 
         return $month[$tmpDate[0]]. ', ' . $tmpDate[1];
+    }
+
+    public function S3PathFilter($str)
+    {
+        return $this->baseUrl . $str;
     }
 
     public function transformIdToUsernames($data)

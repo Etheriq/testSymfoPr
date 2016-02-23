@@ -18,6 +18,10 @@ class CtoClientRepository extends EntityRepository
             $qb->andWhere('u.fullName like :fullname')
                 ->setParameter('fullname', '%' . $filterData['fullName'] . '%');
         }
+        if (array_key_exists('phone', $filterData)) {
+            $qb->andWhere('u.phone like :phone')
+                ->setParameter('phone', '%' . $filterData['phone'] . '%');
+        }
         if (array_key_exists('dateFrom', $filterData)) {
             $qb->andWhere('u.lastVisitDate >= :dateFrom')
                 ->setParameter('dateFrom', new DateTime($filterData['dateFrom']));
@@ -27,7 +31,7 @@ class CtoClientRepository extends EntityRepository
                 ->setParameter('dateTo', new DateTime($filterData['dateTo']));
         }
         $qb
-            ->orderBy('u.lastVisitDate', 'ASC');
+            ->orderBy('u.lastVisitDate', 'DESC');
 
         return $qb->getQuery()->getResult();
     }

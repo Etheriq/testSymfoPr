@@ -49,7 +49,7 @@ class JobsController extends JsonController
             'now' => $now,
             'clients' => $s=$uniqClients['clnts'],
             'jobsCount' => $finReport['jobs'],
-            'money' => $finReport['money']
+            'money' => $finReport['money'],
         ];
     }
 
@@ -77,7 +77,7 @@ class JobsController extends JsonController
 
         return [
             "jobs" => $jobs,
-            "filterForm" => $filterForm->createView()
+            "filterForm" => $filterForm->createView(),
         ];
     }
 
@@ -124,7 +124,7 @@ class JobsController extends JsonController
         return [
             'jobs' => $withPaginator ? $jobs : $filteredJobs,
             'paginator' => $withPaginator,
-            'filterForm' => $filterForm->createView()
+            'filterForm' => $filterForm->createView(),
         ];
     }
 
@@ -132,13 +132,17 @@ class JobsController extends JsonController
      * @Route("/new", name="cto_jobs_new")
      * @Method("GET")
      * @Template()
+     * @param Request $request
+     * @return array
      */
-    public function newAction()
+    public function newAction(Request $request)
     {
+        $clientId = $request->get('clientId', -9);
 
         return [
             'title' => 'Нове замовлення',
-            'back' => 'new'
+            'clientId' => $clientId,
+            'back' => 'new',
         ];
     }
 
@@ -155,11 +159,12 @@ class JobsController extends JsonController
         $carJob = new CarJob();
         $form = $this->createForm(new CarJobType($em), $carJob);
 
-        if ($request->getMethod() == "POST") {
+        if ($request->getMethod() == Request::METHOD_POST) {
 
             $this->handleJsonForm($form, $request);
 
             $carJob->getClient()->setLastVisitDate(new \DateTime('now'));
+            $carJob->setCto($this->getUser());
             $carJob->setTmpHash(uniqid("", true));
 
             $em->persist($carJob);
@@ -175,7 +180,7 @@ class JobsController extends JsonController
     }
 
     /**
-     * @Route("/edit/{id}", name="cto_jobs_edit", options={"expose" = true})
+     * @Route("/edit/{id}", name="cto_jobs_edit", options={"expose" = true}, requirements={"id"="\d+"})
      * @Method("GET")
      * @Template()
      * @param CarJob $carJob
@@ -187,13 +192,15 @@ class JobsController extends JsonController
         return [
             'job' => $carJob->jsonSerialize(),
             'jobId' => $carJob->getId(),
+            'pictures' => $carJob->getPictures()->count() ? $carJob->getPictures() : [],
+            'jobClientId' => $carJob->getClient()->getId(),
             'title' => 'Редагування замовлення',
-            'back' => $carJob->getId()
+            'back' => $carJob->getId(),
         ];
     }
 
     /**
-     * @Route("/editJsonForm/{id}", name="cto_jobs_edit_fromJSONFORM", options={"expose" = true})
+     * @Route("/editJsonForm/{id}", name="cto_jobs_edit_fromJSONFORM", options={"expose" = true}, requirements={"id"="\d+"})
      * @Method("POST")
      * @param CarJob $carJob
      * @param Request $request
@@ -222,7 +229,7 @@ class JobsController extends JsonController
     }
 
     /**
-     * @Route("/show/{id}", name="cto_jobs_show", options={"expose" = true})
+     * @Route("/show/{id}", name="cto_jobs_show", options={"expose" = true}, requirements={"id"="\d+"})
      * @Method({"GET", "POST"})
      * @Template()
      * @param CarJob $carJob
@@ -246,7 +253,7 @@ class JobsController extends JsonController
                 return [
                     'form' => $form->createView(),
                     'visits' => $visitsCount['jobs'],
-                    'job' => $carJob
+                    'job' => $carJob,
                 ];
             }
         }
@@ -254,8 +261,35 @@ class JobsController extends JsonController
         return [
             'form' => $form->createView(),
             'visits' => $visitsCount['jobs'],
-            'job' => $carJob
+            'job' => $carJob,
         ];
+    }
+
+    /**
+     * @param CarJob $job
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     * @Route("/remove/{id}", name="cto_jobs_remove", requirements={"id"="\d+"})
+     * @Method("GET")
+     */
+    public function removeJobAction(CarJob $job)
+    {
+        /** @var EntityManager $em */
+        $em = $this->getDoctrine()->getManager();
+
+        if (count($job->getNotifications())) {
+            $smsSender = $this->get('cto.sms.sender');
+
+            /** @var Notification $notification */
+            foreach($job->getNotifications() as $notification) {
+                $smsSender->stop($notification->getResqueJobDescription());
+            }
+        }
+
+        $em->remove($job);
+        $em->flush();
+
+        return $this->redirectToRoute("cto_jobs_list");
     }
 
     /**
@@ -263,7 +297,7 @@ class JobsController extends JsonController
      * @param Request $request
      * @return JsonResponse
      *
-     * @Route("/{jobId}/reminder", name="cto_jobs_addReminder")
+     * @Route("/{jobId}/reminder", name="cto_jobs_addReminder", requirements={"jobId"="\d+"})
      * @Method({"GET", "POST"})
      * @ParamConverter("carJob", class="CTOAppBundle:CarJob", options={"id"="jobId"})
      * @Template()
@@ -290,7 +324,11 @@ class JobsController extends JsonController
                 $now = Carbon::now();
 
                 if ($notification->getWhenSend() < $now) {
-                    $notification->setAutoSending(false);
+                    if ($notification->isAutoSending() and $notification->isSendNow()) {
+                        $notification->setAutoSending(true);
+                    } else {
+                        $notification->setAutoSending(false);
+                    }
                 }
 
                 /** @var EntityManager $em */
@@ -302,11 +340,16 @@ class JobsController extends JsonController
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($notification, $admin);
+//                        $senderSrv->sendNow($notification, $admin);
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => false
+                        ]);
+
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
-                            'broadcast' => false
+                            'broadcast' => false,
                         ], $this->getParameter('queue_name'), $notification->getWhenSend());
                         $notification->setResqueJobDescription($jobDescription);
                     }
@@ -324,7 +367,7 @@ class JobsController extends JsonController
             'client' => $carJob->getClient()->getFullName(),
             'jobId' => $carJob->getId(),
             'type' => 'нагадування',
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 
@@ -334,7 +377,7 @@ class JobsController extends JsonController
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      *
-     * @Route("/{jobId}/recommendation/{recommendId}", name="cto_jobs_addRecomendation")
+     * @Route("/{jobId}/recommendation/{recommendId}", name="cto_jobs_addRecomendation", requirements={"jobId"="\d+"})
      * @Method({"GET", "POST"})
      * @ParamConverter("carJob", class="CTOAppBundle:CarJob", options={"id"="jobId"})
      * @ParamConverter("recommendation", class="CTOAppBundle:Recommendation", options={"id"="recommendId"})
@@ -379,7 +422,7 @@ class JobsController extends JsonController
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
-                            'broadcast' => false
+                            'broadcast' => false,
                         ], $this->getParameter('queue_name'), $notification->getWhenSend());
                         $notification->setResqueJobDescription($jobDescription);
                     }
@@ -397,12 +440,12 @@ class JobsController extends JsonController
             'client' => $carJob->getClient()->getFullName(),
             'jobId' => $carJob->getId(),
             'type' => 'рекомендацію',
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 
     /**
-     * @Route("/print/{id}", name="cto_jobs_print")
+     * @Route("/print/{id}", name="cto_jobs_print", requirements={"id"="\d+"})
      * @Method("GET")
      * @Template()
      * @param CarJob $carJob
@@ -414,7 +457,7 @@ class JobsController extends JsonController
 
         return [
             'today' => $today,
-            'job' => $carJob
+            'job' => $carJob,
         ];
     }
 }

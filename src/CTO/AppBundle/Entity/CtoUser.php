@@ -56,12 +56,24 @@ class CtoUser extends BaseUser
      */
     protected $city;
 
+    /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\CarJob", mappedBy="cto", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $jobs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CTO\AppBundle\Entity\Master", mappedBy="cto", cascade={"persist", "remove"}, orphanRemoval=true)
+     */
+    protected $masters;
+
     public function __construct()
     {
         parent::__construct();
         $this->setRoles([self::ROLE_CTO_USER]);
         $this->setBlocked(false);
         $this->clients = new ArrayCollection();
+        $this->masters = new ArrayCollection();
+        $this->jobs = new ArrayCollection();
     }
 
     /**
@@ -176,5 +188,65 @@ class CtoUser extends BaseUser
     public function removeClient(CtoClient $client)
     {
         $this->clients->removeElement($client);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getMasters()
+    {
+        return $this->masters;
+    }
+
+    /**
+     * @param Master $master
+     * @return CtoUser
+     */
+    public function addMaster(Master $master)
+    {
+        if (!$this->getMasters()->contains($master)) {
+            $master->setCto($this);
+            $this->masters->add($master);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Master $master
+     */
+    public function removeMaster(Master $master)
+    {
+        $this->masters->removeElement($master);
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getJobs()
+    {
+        return $this->jobs;
+    }
+
+    /**
+     * @param CarJob $job
+     * @return CtoUser
+     */
+    public function addJob(CarJob $job)
+    {
+        if (!$this->getJobs()->contains($job)) {
+            $job->setCto($this);
+            $this->jobs->add($job);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param CarJob $job
+     */
+    public function removeJob(CarJob $job)
+    {
+        $this->jobs->removeElement($job);
     }
 }

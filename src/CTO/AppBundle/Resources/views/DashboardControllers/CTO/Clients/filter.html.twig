@@ -13,6 +13,7 @@
             <div class="text-center filter-form">
                 {{ form_start(filterForm, {'action': path('cto_client_filter'), 'attr': {'novalidate': 'novalidate'}}) }}
                 {{ form_widget(filterForm.fullName) }}
+                {{ form_widget(filterForm.phone) }}
                 {{ form_widget(filterForm.dateFrom) }}
                 {{ form_widget(filterForm.dateTo) }}
                 <div class="hidden">
@@ -34,9 +35,11 @@
                 <thead>
                 <tr>
                     {% if paginator %}
-                        <th class="text-center">{{ knp_pagination_sortable(clients, '#', 'u.id') }}</th>
+                        {#<th class="text-center">{{ knp_pagination_sortable(clients, '#', 'u.id') }}</th>#}
+                        <th class="text-center">#</th>
                         <th>{{ knp_pagination_sortable(clients, 'Ім\'я', 'u.firstName') }}</th>
                         <th>{{ knp_pagination_sortable(clients, 'Прізвище', 'u.lastName') }}</th>
+                        <th>Телефон</th>
                         <th>{{ knp_pagination_sortable(clients, 'Дата візиту', 'u.lastVisitDate') }}</th>
                         <th>{{ knp_pagination_sortable(clients, 'Клієнт з', 'u.createdAt') }}</th>
                         {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
@@ -48,6 +51,7 @@
                         <th class="text-center">#</th>
                         <th>Ім'я</th>
                         <th>Прізвище</th>
+                        <th>Телефон</th>
                         <th>Дата візиту</th>
                         <th>Клієнт з</th>
                         {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
@@ -61,9 +65,10 @@
                 <tbody>
                 {% for client in clients %}
                     <tr>
-                        <td class="text-center">{{ client.id }}</td>
+                        <td class="text-center">{{ loop.index }}</td>
                         <td>{{ client.firstName }}</td>
                         <td>{{ client.lastName }}</td>
+                        <td>{{ client.phone }}</td>
                         <td>{{ client.lastVisitDate | date("d.m.Y H:i") }}</td>
                         <td>{{ client.createdAt | date("d.m.Y H:i") }}</td>
                         {% if is_granted('ROLE_PREVIOUS_ADMIN') %}

@@ -51,7 +51,8 @@
             <h3>
                 Деталі замовлення
                 <div class="pull-right">
-                    {#<a href="{{ path('cto_jobs_print', {'id': job.id}) }}" target="_blank" class="btn btn-sm btn-info">Роздрукувати</a>#}
+                    <a href="{{ path('cto_jobs_remove', {'id': job.id}) }}" onclick="return confirm('Ви впевнені що хочете видалить?')" class="btn btn-sm btn-danger"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Видалити</a>
+                    <div style="display: inline-block; width: 30px;"></div>
                     <a href="{{ path("cto_jobs_edit", {"id": job.id}) }}" class="btn btn-sm btn-warning">Редагувати замовлення</a>
                     <a href="#" class="btn btn-sm btn-success" id="addRecommendationButton">Додати рекомендацію</a>
                     <a href="{{ path('cto_jobs_addReminder', {'jobId': job.id}) }}" class="btn btn-sm btn-success">Додати нагадування</a>
@@ -63,23 +64,46 @@
     </div>
 
     <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h4><u>Загальна інформація про клієнта:</u></h4>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Ім'я: </span>{{ job.client.firstName }}&nbsp;&nbsp;(<a href="{{ path('cto_client_show', {"slug": job.client.slug }) }}">Профайл кліента</a>)</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Прізвище: </span>{{ job.client.lastName }}</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Кількість візитів: </span> {{ visits }} </p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата реєстрації: </span>{{ job.client.createdAt | date("d.m.Y") }}</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата останнього візиту: </span>{{ job.client.lastVisitDate | date("d.m.Y") }}</p>
-        </div>
-    </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <h4><u>Загальна інформація про клієнта:</u></h4>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Ім'я: </span>{{ job.client.firstName }}&nbsp;&nbsp;(<a href="{{ path('cto_client_show', {"slug": job.client.slug }) }}">Профайл кліента</a>)</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Прізвище: </span>{{ job.client.lastName }}</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Кількість візитів: </span> {{ visits }} </p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата реєстрації: </span>{{ job.client.createdAt | date("d.m.Y") }}</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата останнього візиту: </span>{{ job.client.lastVisitDate | date("d.m.Y") }}</p>
+                </div>
+            </div>
 
-    <div class="row">
-        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <h4><u>Замовлення:</u></h4>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата: </span>{{ job.jobDate | date("d.m.Y") }}</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Витрачено (клієнтом): </span>{{ job.totalCost | number_format(2, '.', ',') }} грн.</p>
-            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Витрачено (Pri4a studio): </span>{{ job.totalSpend | number_format(2, '.', ',') }} грн.</p>
-            <p style="color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Прибуток: </span>{{ (job.totalCost - job.totalSpend) | number_format(2, '.', ',') }} грн.</p>
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                    <h4><u>Замовлення:</u></h4>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Дата: </span>{{ job.jobDate | date("d.m.Y") }}</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Витрачено (клієнтом): </span>{{ job.totalCost | number_format(2, '.', ',') }} грн.</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Витрачено (Pri4a studio): </span>{{ job.totalSpend | number_format(2, '.', ',') }} грн.</p>
+                    <p style="color: red;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bolder">Прибуток: </span>{{ (job.totalCost - job.totalSpend) | number_format(2, '.', ',') }} грн.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
+            <div id="gallery">
+                {% for picture in job.pictures %}
+                    {% if (loop.index <= 15 ) %}
+                    <div style="width: 18%; display: inline-block; margin-bottom: 10px; margin-right: 5px;">
+                        <a class="group1" href="{{ picture.path | S3Path }}">
+                            <img src="{{ picture.path | S3Path }}" class="img-responsive" style="vertical-align: top; height: 60px;" />
+                        </a>
+                    </div>
+                    {% else %}
+                        <div class="hidden">
+                            <a class="group1" href="{{ picture.path | S3Path }}">
+                                <img src="{{ picture.path | S3Path }}" class="img-responsive" style="vertical-align: top;" />
+                            </a>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 
@@ -91,6 +115,7 @@
                 <h5>&nbsp;&nbsp;&nbsp;{{ category.jobCategory.name }}</h5>
                 {% if category.jobDescriptions | length > 0 %}
                     <div class="well well-sm">
+                        <p><span class="font-bolder">Майстер: </span>{{ category.master.fullName }}</p>
                         {% for description in category.jobDescriptions %}
                             <p><span class="font-bolder">Опис: </span>{{ description.description }}</p>
                             <p><span class="font-bolder">Ціна: </span>{{ description.price | number_format(2, '.', ',') }} грн.</p>
@@ -103,10 +128,11 @@
         <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
             <h4 class="text-center"><u>Витрати:</u></h4>
             {% if job.paidSalaryJob | length > 0 %}
-                <h5>&nbsp;&nbsp;&nbsp;Виплачена зарплата</h5>
+                <h5>&nbsp;&nbsp;&nbsp;Виплачена зарплата:</h5>
                 <div class="well well-sm">
                     {% for paid in job.paidSalaryJob %}
-                        <p><span class="font-bolder">Кому: </span>{{ paid.description }}</p>
+                        <p><span class="font-bolder">Майстер: </span>{{ paid.master.fullName }}</p>
+                        <p><span class="font-bolder">Нотатки: </span>{{ paid.description }}</p>
                         <p><span class="font-bolder">Сума: </span>{{ paid.price | number_format(2, '.', ',') }} грн.</p>
                     {% endfor %}
                 </div>
@@ -136,6 +162,18 @@
 {% block javascripts %}
 <script>
     jQuery(function ($) {
+
+        $(".group1").colorbox({
+            rel:'group1',
+            transition:"elastic",
+            scalePhotos: true,
+            maxHeight: "85%",
+            arrowKey: true,
+            speed: 300,
+            slideshowSpeed: 4000,
+            fadeOut: 500,
+            slideshow: true
+        });
 
         var recommendationForm = $("#addRecommendationForm");
 //        recommendationForm.on('submit', function(e) {

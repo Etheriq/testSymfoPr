@@ -23,6 +23,11 @@ class CarCategory implements \JsonSerializable
     protected $jobCategory;
 
     /**
+     * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\Master")
+     */
+    protected $master;
+
+    /**
      * @ORM\ManyToOne(targetEntity="CTO\AppBundle\Entity\CarJob", inversedBy="carCategories")
      */
     protected $carJob;
@@ -43,6 +48,7 @@ class CarCategory implements \JsonSerializable
     {
         return [
             "jobCategory" => (string) $this->getJobCategory()->getId(),
+            "master" => (string) $this->getMaster()->getId(),
             "jobDescriptions" => $this->getJobDescriptions()->getValues()
         ];
     }
@@ -114,6 +120,25 @@ class CarCategory implements \JsonSerializable
     public function removeJobDescription(CategoryJobDescription $categoryJobDescription)
     {
         $this->jobDescriptions->removeElement($categoryJobDescription);
+    }
+
+    /**
+     * @return Master
+     */
+    public function getMaster()
+    {
+        return $this->master;
+    }
+
+    /**
+     * @param Master $master
+     * @return CarCategory
+     */
+    public function setMaster(Master $master)
+    {
+        $this->master = $master;
+
+        return $this;
     }
 
     public function __toString()
