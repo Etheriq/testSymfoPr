@@ -476,6 +476,10 @@
                                                 options[i].selected = true;
                                             }
                                         }
+                                        clients = $(document.getElementById("jsonform-0-elt-car_job.client"));
+                                        clients.selectpicker({
+                                            liveSearch: true
+                                        });
                                     }, 500);
                                 } else {
                                     clients.append('<option value="" disabled="disabled">Клієнтів не знайдено.</option>');
