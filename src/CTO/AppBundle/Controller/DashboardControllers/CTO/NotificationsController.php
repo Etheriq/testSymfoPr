@@ -134,12 +134,8 @@ class NotificationsController extends Controller
 
                 if ($notification->isAutoSending()) {
                     $senderSrv = $this->get('cto.sms.sender');
-                    /** @var CtoUser $admin */
-                    $admin = $this->getUser();
 
                     if ($notification->isSendNow()) {
-//                        $senderSrv->sendNow($notification, $admin);
-
                         $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
                             'broadcast' => false
@@ -162,7 +158,6 @@ class NotificationsController extends Controller
 
         return [
             'client' => $carJob->getClient()->getFullName(),
-            'auto' => $carJob->getCar()->getCarModel(),
             'form' => $form->createView()
         ];
     }
@@ -221,7 +216,6 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($newNotification->isSendNow()) {
-//                        $senderSrv->sendNow($newNotification, $admin);
 
                         $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $newNotification->getId(),
@@ -245,7 +239,6 @@ class NotificationsController extends Controller
 
         return [
             'client' => $carJob->getClient()->getFullName(),
-            'auto' => $carJob->getCar()->getCarModel(),
             'form' => $form->createView()
         ];
     }
@@ -294,18 +287,10 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-//                        $senderSrv->sendNow($notification, $admin, true);
-
-//                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
-//                            'notificationId' => $notification->getId(),
-//                            'broadcast' => true,
-//                        ]);
-
-                        $senderSrv->execute([
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
                             'broadcast' => true,
                         ]);
-
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
@@ -368,7 +353,6 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-//                        $senderSrv->sendNow($notification, $admin, true);
 
                         $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $notification->getId(),
@@ -441,8 +425,6 @@ class NotificationsController extends Controller
             ->setType(Notification::TYPE_BROADCAST)
             ->setUserCto($admin)
             ->setDescription($notification->getDescription());
-
-
         $form = $this->createForm(new BroadcastType(), $newNotification);
 
         if ($request->getMethod() == Request::METHOD_POST) {
@@ -468,7 +450,10 @@ class NotificationsController extends Controller
                     $senderSrv = $this->get('cto.sms.sender');
 
                     if ($notification->isSendNow()) {
-                        $senderSrv->sendNow($newNotification, $admin, true);
+                        $senderSrv->getResqueManager()->put('cto.sms.sender', [
+                            'notificationId' => $notification->getId(),
+                            'broadcast' => true
+                        ]);
                     } else {
                         $jobDescription = $senderSrv->getResqueManager()->put('cto.sms.sender', [
                             'notificationId' => $newNotification->getId(),
