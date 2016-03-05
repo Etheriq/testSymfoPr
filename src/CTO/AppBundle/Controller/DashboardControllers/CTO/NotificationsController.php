@@ -451,7 +451,7 @@ class NotificationsController extends Controller
 
                     if ($notification->isSendNow()) {
                         $senderSrv->getResqueManager()->put('cto.sms.sender', [
-                            'notificationId' => $notification->getId(),
+                            'notificationId' => $newNotification->getId(),
                             'broadcast' => true
                         ]);
                     } else {
