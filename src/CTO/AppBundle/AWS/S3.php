@@ -23,6 +23,9 @@ class S3
         $this->s3 = new S3Client([
             'version'     => 'latest',
             'region'      => $region,
+            'http'        => [
+                'verify'  => false
+            ],
             'credentials' => [
                 'key'    => $key,
                 'secret' => $secret

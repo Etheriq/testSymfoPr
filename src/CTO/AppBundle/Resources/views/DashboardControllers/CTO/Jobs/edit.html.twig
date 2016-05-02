@@ -377,7 +377,7 @@
 
                                     if (uploadedFiles.length > 0) {
 
-                                        var addedPicturesToJobUrl = Routing.generate('ajax_cto_addedPicturesToJob', {'id': response.jid});
+                                        var addedPicturesToJobUrl = Routing.generate('ajax_cto_addedPicturesToJob', {'id': jobId});
                                         $.ajax({
                                             url: addedPicturesToJobUrl,
                                             type: "POST",
@@ -480,7 +480,7 @@
                                         clients.selectpicker({
                                             liveSearch: true
                                         });
-                                    }, 500);
+                                    }, 1000);
                                 } else {
                                     clients.append('<option value="" disabled="disabled">Клієнтів не знайдено.</option>');
                                 }
