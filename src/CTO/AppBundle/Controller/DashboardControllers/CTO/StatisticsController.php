@@ -2,6 +2,7 @@
 
 namespace CTO\AppBundle\Controller\DashboardControllers\CTO;
 
+use Carbon\Carbon;
 use CTO\AppBundle\Entity\CarJob;
 use CTO\AppBundle\Entity\CtoUser;
 use CTO\AppBundle\Entity\DTO\StatisticFilterDTO;
@@ -44,6 +45,8 @@ class StatisticsController extends Controller
 
         // General
         $filterDTO = new StatisticFilterDTO();
+        $filterDTO->setDateFrom(Carbon::now()->subMonths(2)->startOfMonth()->format("d.m.Y"));
+        $filterDTO->setDateTo(Carbon::now()->format("d.m.Y"));
         $formGeneral = $this->createForm(StatisticFilterDTOType::class, $filterDTO);
         $formGeneral->handleRequest($request);
         /** @var CarJob[] $jobs */
@@ -51,6 +54,8 @@ class StatisticsController extends Controller
 
         // Masters
         $filterMastersDTO = new StatisticsMastersFilterDTO();
+        $filterMastersDTO->setDateFrom(Carbon::now()->subMonths(2)->startOfMonth()->format("d.m.Y"));
+        $filterMastersDTO->setDateTo(Carbon::now()->format("d.m.Y"));
         $formMasters = $this->createForm(StatisticsMastersFilterDTOType::class, $filterMastersDTO);
         $formMasters->handleRequest($request);
         /** @var PaidSalaryJob[] $masters */
